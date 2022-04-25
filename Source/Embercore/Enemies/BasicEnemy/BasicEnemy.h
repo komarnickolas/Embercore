@@ -32,16 +32,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	bool PlayerDetected;
 	bool CanAttackPlayer;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool CanDealDamage;
 
-	class AEmbercoreCharacter* PlayerRef;
+	class APlayerCharacter* PlayerRef;
 
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* PlayerCollisionDetection;
@@ -60,9 +57,6 @@ public:
 	float StoppingDistance = 100.0f;
 
 	FTimerHandle SeekPlayerTimeHandle;
-
-	UFUNCTION()
-	void MoveToPlayer();
 
 	UFUNCTION()
 	void SeekPlayer();

@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Embercore/EmbercoreCharacter.h"
+#include "Embercore/Player/PlayerCharacter.h"
 #include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
 
 // Sets default values
@@ -48,8 +49,6 @@ void ABasicEnemy::BeginPlay() {
 	Super::BeginPlay();
 
 	BasicEnemyAIController = Cast<ABasicEnemyAIController>(GetController());
-	BasicEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(
-		this, &ABasicEnemy::OnAIMoveCompleted);
 
 	PlayerCollisionDetection->OnComponentBeginOverlap.AddDynamic(this, &ABasicEnemy::OnPlayerDetectedOverlapBegin);
 	PlayerCollisionDetection->OnComponentEndOverlap.AddDynamic(this, &ABasicEnemy::OnPlayerDetectedOverlapEnd);
@@ -63,31 +62,30 @@ void ABasicEnemy::BeginPlay() {
 // Called every frame
 void ABasicEnemy::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void ABasicEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	if (PlayerDetected) {
+		UE_LOG(LogTemp, Warning, TEXT("Player Detected"));
+		SeekPlayer();
+	}
+	else {
+		StopSeekingPlayer();
+	}
 }
 
 void ABasicEnemy::OnAIMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) {
-	if (!PlayerDetected) {
-		BasicEnemyAIController->RandomPatrol();
+	if (PlayerDetected) {
+		SeekPlayer();
 	}
-	else if (PlayerDetected && CanAttackPlayer) {
+	else {
 		StopSeekingPlayer();
-		UE_LOG(LogTemp, Warning, TEXT("Player ATTACKED"));
 	}
-}
-
-void ABasicEnemy::MoveToPlayer() {
-	BasicEnemyAIController->MoveToLocation(PlayerRef->GetActorLocation(), StoppingDistance, true);
 }
 
 void ABasicEnemy::SeekPlayer() {
-	MoveToPlayer();
-	GetWorld()->GetTimerManager().SetTimer(SeekPlayerTimeHandle, this, &ABasicEnemy::SeekPlayer, 0.25f, true);
+	if (PlayerRef) {
+		UE_LOG(LogTemp, Warning, TEXT("Seeking Player"));
+		BasicEnemyAIController->MoveToLocation(PlayerRef->GetActorLocation(), StoppingDistance, true);
+		GetWorld()->GetTimerManager().SetTimer(SeekPlayerTimeHandle, this, &ABasicEnemy::SeekPlayer, 0.25f, true);
+	}
 }
 
 void ABasicEnemy::StopSeekingPlayer() {
@@ -97,28 +95,24 @@ void ABasicEnemy::StopSeekingPlayer() {
 void ABasicEnemy::OnPlayerDetectedOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                                const FHitResult& SweepResult) {
-	PlayerRef = Cast<AEmbercoreCharacter>(OtherActor);
+	PlayerRef = Cast<APlayerCharacter>(OtherActor);
 	if (PlayerRef) {
 		PlayerDetected = true;
-		SeekPlayer();
 	}
 }
 
 void ABasicEnemy::OnPlayerDetectedOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
-	PlayerRef = Cast<AEmbercoreCharacter>(OtherActor);
+	PlayerRef = Cast<APlayerCharacter>(OtherActor);
 	if (PlayerRef) {
 		PlayerDetected = false;
-		StopSeekingPlayer();
-		BasicEnemyAIController->RandomPatrol();
 	}
-
 }
 
 void ABasicEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                              const FHitResult& SweepResult) {
-	PlayerRef = Cast<AEmbercoreCharacter>(OtherActor);
+	PlayerRef = Cast<APlayerCharacter>(OtherActor);
 	if (PlayerRef) {
 		CanAttackPlayer = true;
 	}
@@ -126,17 +120,16 @@ void ABasicEnemy::OnPlayerAttackOverlapBegin(UPrimitiveComponent* OverlappedComp
 
 void ABasicEnemy::OnPlayerAttackOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
-	PlayerRef = Cast<AEmbercoreCharacter>(OtherActor);
+	PlayerRef = Cast<APlayerCharacter>(OtherActor);
 	if (PlayerRef) {
 		CanAttackPlayer = false;
-		SeekPlayer();
 	}
 }
 
 void ABasicEnemy::OnDealDamageOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                            const FHitResult& SweepResult) {
-	PlayerRef = Cast<AEmbercoreCharacter>(OtherActor);
+	PlayerRef = Cast<APlayerCharacter>(OtherActor);
 	if (PlayerRef && CanDealDamage) {
 		UE_LOG(LogTemp, Warning, TEXT("Player Damaged"));
 	}

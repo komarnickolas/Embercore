@@ -5,6 +5,7 @@
 #include "EmbercorePlayerController.h"
 #include "EmbercoreCharacter.h"
 #include "EmbercorePlayerHUD.h"
+#include "EmbercorePlayerState.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/PlayerCharacter.h"
@@ -14,6 +15,7 @@
 AEmbercoreGameMode::AEmbercoreGameMode() {
 	// use our custom PlayerController class
 	PlayerControllerClass = AEmbercorePlayerController::StaticClass();
+	PlayerStateClass = AEmbercorePlayerState::StaticClass();
 
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
