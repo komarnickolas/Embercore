@@ -34,8 +34,6 @@ public:
 
 	class UEmbercoreFloatingStatusBarWidget* GetFloatingStatusBar();
 
-	USkeletalMeshComponent* GetGunComponent() const;
-
 	virtual void FinishDying() override;
 
 protected:
@@ -56,9 +54,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Embercore|Camera")
 	class UCameraComponent* FollowCamera;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	USkeletalMeshComponent* GunComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Embercore|UI")
 	TSubclassOf<class UEmbercoreFloatingStatusBarWidget> UIFloatingStatusBarClass;

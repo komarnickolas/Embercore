@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Embercore/EmbercoreCharacter.h"
+#include "Embercore/Abilities/AsyncTask/AsyncTaskAttributeChanged.h"
 #include "GameFramework/Character.h"
 #include "BasicEnemy.generated.h"
 
@@ -19,7 +20,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
+	// Actual hard pointer to AbilitySystemComponent
+	UPROPERTY()
+	class UEmbercoreAbilitySystemComponent* HardRefAbilitySystemComponent;
+
+	// Actual hard pointer to AttributeSetBase
+	UPROPERTY()
+	class UEmbercoreAttributeSet* HardRefAttributeSetBase;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Embercore|UI")
 	TSubclassOf<class UEmbercoreFloatingStatusBarWidget> UIFloatingStatusBarClass;
 
@@ -29,6 +37,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Embercore|UI")
 	class UWidgetComponent* UIFloatingStatusBarComponent;
 
+	FDelegateHandle HealthChangedDelegateHandle;
+
+	// Attribute changed callbacks
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+
+	// Tag change callbacks
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

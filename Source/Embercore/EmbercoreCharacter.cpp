@@ -3,7 +3,8 @@
 #include "EmbercoreCharacter.h"
 
 #include "EmbercoreCharacterMovementComponent.h"
-#include "EmbercorePlayerAttributeSet.h"
+#include "EmbercoreAttributeSet.h"
+#include "Abilities/EmbercoreGameplayAbility.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
@@ -19,8 +20,8 @@ AEmbercoreCharacter::AEmbercoreCharacter(const class FObjectInitializer& ObjectI
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility,
-	                                                     ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility,
+	                                                     ECR_Overlap);
 
 	bAlwaysRelevant = true;
 
@@ -56,17 +57,17 @@ void AEmbercoreCharacter::RemoveCharacterAbilities() {
 	}
 
 	// Remove any abilities added from a previous call. This checks to make sure the ability is in the startup 'CharacterAbilities' array.
-	// TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
-	// for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities()) {
-	// 	if ((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass())) {
-	// 		AbilitiesToRemove.Add(Spec.Handle);
-	// 	}
-	// }
-	//
-	// // Do in two passes so the removal happens after we have the full list
-	// for (int32 i = 0; i < AbilitiesToRemove.Num(); i++) {
-	// 	AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
-	// }
+	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+	for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities()) {
+		if ((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass())) {
+			AbilitiesToRemove.Add(Spec.Handle);
+		}
+	}
+
+	// Do in two passes so the removal happens after we have the full list
+	for (int32 i = 0; i < AbilitiesToRemove.Num(); i++) {
+		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
+	}
 
 	AbilitySystemComponent->CharacterAbilitiesGiven = false;
 }
@@ -85,20 +86,14 @@ EEmbercoreHitReactDirection AEmbercoreCharacter::GetHitReactDirection(const FVec
 		if (DistanceToRightLeftPlane >= 0) {
 			return EEmbercoreHitReactDirection::Front;
 		}
-		else {
-			return EEmbercoreHitReactDirection::Back;
-		}
+		return EEmbercoreHitReactDirection::Back;
 	}
-	else {
-		// Determine if Right or Left
+	// Determine if Right or Left
 
-		if (DistanceToFrontBackPlane >= 0) {
-			return EEmbercoreHitReactDirection::Right;
-		}
-		else {
-			return EEmbercoreHitReactDirection::Left;
-		}
+	if (DistanceToFrontBackPlane >= 0) {
+		return EEmbercoreHitReactDirection::Right;
 	}
+	return EEmbercoreHitReactDirection::Left;
 
 	return EEmbercoreHitReactDirection::Front;
 }
@@ -242,11 +237,11 @@ void AEmbercoreCharacter::AddCharacterAbilities() {
 		return;
 	}
 
-	// for (TSubclassOf<UGDGameplayAbility>& StartupAbility : CharacterAbilities) {
-	// 	AbilitySystemComponent->GiveAbility(
-	// 		FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID),
-	// 		                     static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
-	// }
+	for (TSubclassOf<UEmbercoreGameplayAbility>& StartupAbility : CharacterAbilities) {
+		AbilitySystemComponent->GiveAbility(
+			FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID),
+			                     static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+	}
 
 	AbilitySystemComponent->CharacterAbilitiesGiven = true;
 }

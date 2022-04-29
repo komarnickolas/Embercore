@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY()
-	class UEmbercorePlayerAttributeSet* Attributes;
+	class UEmbercoreAttributeSet* Attributes;
 	// Set the Hit React direction in the Animation Blueprint
 	UPROPERTY(BlueprintAssignable, Category = "EmbercoreCharacter")
 	FCharacterBaseHitReactDelegate ShowHitReact;
@@ -104,7 +104,7 @@ protected:
 	// the ASC/AttributeSet from the PlayerState or child classes every time I referenced them in this base class.
 
 	TWeakObjectPtr<class UEmbercoreAbilitySystemComponent> AbilitySystemComponent;
-	TWeakObjectPtr<class UEmbercorePlayerAttributeSet> AttributeSetBase;
+	TWeakObjectPtr<class UEmbercoreAttributeSet> AttributeSetBase;
 
 	FGameplayTag HitDirectionFrontTag;
 	FGameplayTag HitDirectionBackTag;
@@ -117,20 +117,20 @@ protected:
 	FText CharacterName;
 
 	// Death Animation
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASDocumentation|Animation")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Embercore|Animation")
 	UAnimMontage* DeathMontage;
 
 	// Default abilities for this Character. These will be removed on Character death and regiven if Character respawns.
-	// UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASDocumentation|Abilities")
-	// TArray<TSubclassOf<class UGDGameplayAbility>> CharacterAbilities;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Embercore|Abilities")
+	TArray<TSubclassOf<class UEmbercoreGameplayAbility>> CharacterAbilities;
 
 	// Default attributes for a character for initializing on spawn/respawn.
 	// This is an instant GE that overrides the values for attributes that get reset on spawn/respawn.
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASDocumentation|Abilities")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Embercore|Abilities")
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
 	// These effects are only applied one time on startup
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASDocumentation|Abilities")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Embercore|Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
 	// Grant abilities on the Server. The Ability Specs will be replicated to the owning client.

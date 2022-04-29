@@ -9,7 +9,7 @@
 #include "Embercore/EmbercoreGameMode.h"
 #include "Embercore/EmbercorePlayerController.h"
 #include "Embercore/EmbercorePlayerState.h"
-#include "Embercore/EmbercorePlayerAttributeSet.h"
+#include "Embercore/EmbercoreAttributeSet.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
 #include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -30,7 +30,7 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	CameraBoom->TargetArmLength = 1400.f;
+	CameraBoom->TargetArmLength = 1000.f;
 	CameraBoom->SetRelativeRotation(FRotator(-80.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
@@ -38,8 +38,6 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-
-	GunComponent = CreateDefaultSubobject<USkeletalMeshComponent>(FName("Gun"));
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
@@ -146,10 +144,6 @@ UEmbercoreFloatingStatusBarWidget* APlayerCharacter::GetFloatingStatusBar() {
 	return UIFloatingStatusBar;
 }
 
-USkeletalMeshComponent* APlayerCharacter::GetGunComponent() const {
-	return GunComponent;
-}
-
 void APlayerCharacter::FinishDying() {
 	if (GetLocalRole() == ROLE_Authority) {
 		AEmbercoreGameMode* GM = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode());
@@ -181,11 +175,6 @@ void APlayerCharacter::BeginPlay() {
 
 void APlayerCharacter::PostInitializeComponents() {
 	Super::PostInitializeComponents();
-
-	if (GunComponent && GetMesh()) {
-		GunComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		                                FName("GunSocket"));
-	}
 }
 
 void APlayerCharacter::LookUp(float Value) {

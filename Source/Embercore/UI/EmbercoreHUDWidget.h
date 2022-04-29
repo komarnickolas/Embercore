@@ -63,7 +63,7 @@ public:
 	void SetExperience(int32 Experience);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetHeroLevel(int32 HeroLevel);
+	void SetLevel(int32 Level);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetGold(int32 Gold);

@@ -16,25 +16,15 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	// use our custom PlayerController class
 	PlayerControllerClass = AEmbercorePlayerController::StaticClass();
 	PlayerStateClass = AEmbercorePlayerState::StaticClass();
-
-	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
 		TEXT("/Game/Characters/Player/BP_TopDownCharacter"));
 	if (PlayerPawnBPClass.Class != nullptr) {
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
-
-	// set default controller to our Blueprinted controller
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(
 		TEXT("/Game/Characters/Player/BP_TopDownPlayerController"));
 	if (PlayerControllerBPClass.Class != NULL) {
 		PlayerControllerClass = PlayerControllerBPClass.Class;
-	}
-	// set default controller to our Blueprinted controller
-	static ConstructorHelpers::FClassFinder<AEmbercorePlayerHUD> PlayerHUDBPClass(
-		TEXT("/Game/UI/Player_HUD_BP"));
-	if (PlayerHUDBPClass.Class != NULL) {
-		HUDClass = PlayerHUDBPClass.Class;
 	}
 }
 

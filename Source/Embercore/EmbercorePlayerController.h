@@ -19,7 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Embercore|UI")
 	TSubclassOf<class UEmbercoreDamageTextWidgetComponent> DamageNumberClass;
 
-	class UEmbercoreHUDWidget* GetHUD();
+	class UEmbercoreHUDWidget* GetHUD() const;
+
+	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void ShowDamageNumber(float DamageAmount, AEmbercoreCharacter* TargetCharacter);
@@ -31,7 +33,6 @@ public:
 	void SetRespawnCountdown(float RespawnTimeRemaining);
 	void SetRespawnCountdown_Implementation(float RespawnTimeRemaining);
 	bool SetRespawnCountdown_Validate(float RespawnTimeRemaining);
-
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Embercore|UI")
 	TSubclassOf<class UEmbercoreHUDWidget> UIHUDWidgetClass;

@@ -13,12 +13,14 @@
 #include "EmbercoreCharacter.h"
 #include "EmbercorePlayerState.h"
 #include "Engine/World.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Player/PlayerCharacter.h"
 #include "UI/EmbercoreDamageTextWidgetComponent.h"
 #include "UI/EmbercoreHUDWidget.h"
 
 AEmbercorePlayerController::AEmbercorePlayerController() {
 	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
+	DefaultMouseCursor = EMouseCursor::Crosshairs;
 }
 
 void AEmbercorePlayerController::CreateHUD() {
@@ -63,7 +65,7 @@ void AEmbercorePlayerController::CreateHUD() {
 	UIHUDWidget->SetStaminaRegenRate(PS->GetStaminaRegenRate());
 	UIHUDWidget->SetExperience(PS->GetXP());
 	UIHUDWidget->SetGold(PS->GetGold());
-	UIHUDWidget->SetHeroLevel(PS->GetCharacterLevel());
+	UIHUDWidget->SetLevel(PS->GetCharacterLevel());
 
 	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr,
 	                                    TEXT("/Game/UI/WC_DamageText.WC_DamageText_C"));
@@ -75,8 +77,17 @@ void AEmbercorePlayerController::CreateHUD() {
 	}
 }
 
-UEmbercoreHUDWidget* AEmbercorePlayerController::GetHUD() {
+UEmbercoreHUDWidget* AEmbercorePlayerController::GetHUD() const {
 	return UIHUDWidget;
+}
+
+void AEmbercorePlayerController::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+	FVector MouseLocation, MouseDirection;
+	this->DeprojectMousePositionToWorld(MouseLocation, MouseDirection);
+	FRotator CurrentRotation = GetCharacter()->GetActorRotation();
+	FRotator NewRotation = FRotator(CurrentRotation.Pitch, MouseDirection.Rotation().Yaw, CurrentRotation.Roll);
+	GetCharacter()->SetActorRotation(NewRotation);
 }
 
 void AEmbercorePlayerController::ShowDamageNumber_Implementation(float DamageAmount,

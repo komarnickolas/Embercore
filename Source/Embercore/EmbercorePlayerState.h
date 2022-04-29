@@ -18,7 +18,7 @@ public:
 	AEmbercorePlayerState();
 	class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	class UEmbercorePlayerAttributeSet* GetAttributeSetBase() const;
+	class UEmbercoreAttributeSet* GetAttributeSetBase() const;
 
 	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState")
 	bool IsAlive() const;
@@ -79,7 +79,7 @@ protected:
 	class UEmbercoreAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY()
-	class UEmbercorePlayerAttributeSet* AttributeSetBase;
+	class UEmbercoreAttributeSet* AttributeSetBase;
 
 	FGameplayTag DeadTag;
 
