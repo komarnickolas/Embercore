@@ -19,17 +19,6 @@
 ABasicEnemy::ABasicEnemy(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	PlayerCollisionDetection = CreateDefaultSubobject<USphereComponent>(TEXT("Player Collision Detection"));
-	PlayerCollisionDetection->SetupAttachment(RootComponent);
-
-	PlayerAttackCollisionDetection = CreateDefaultSubobject<
-		USphereComponent>(TEXT("Player Attack Collision Detection"));
-	PlayerAttackCollisionDetection->SetupAttachment(RootComponent);
-
-	DamageCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Damage Collision"));
-	DamageCollision->SetupAttachment(GetMesh(), TEXT("RootSocket"));
-
 	// Create ability system component, and set it to be explicitly replicated
 	HardRefAbilitySystemComponent = CreateDefaultSubobject<UEmbercoreAbilitySystemComponent>(
 		TEXT("AbilitySystemComponent"));
