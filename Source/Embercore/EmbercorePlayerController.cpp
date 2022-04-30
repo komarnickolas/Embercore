@@ -85,25 +85,22 @@ UEmbercoreHUDWidget* AEmbercorePlayerController::GetHUD() const {
 void AEmbercorePlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	FVector MouseLocation, MouseDirection;
-	this->DeprojectMousePositionToWorld(MouseLocation, MouseDirection);
-	const FVector MousePosition = (MouseDirection * 1000) + MouseLocation;
-	const FVector CharacterLocation = GetCharacter()->GetActorLocation();
-	const FRotator CharacterRotation = GetCharacter()->GetActorRotation();
-	const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(CharacterLocation, MousePosition);
-	const FRotator NewRotation = FRotator(CharacterRotation.Pitch, LookRotation.Yaw, CharacterRotation.Roll);
-	GetCharacter()->SetActorRotation(NewRotation);
+	if (GetCharacter()) {
+		FVector MouseLocation, MouseDirection;
+		this->DeprojectMousePositionToWorld(MouseLocation, MouseDirection);
+		const FVector MousePosition = (MouseDirection * 1000) + MouseLocation;
+		const FVector CharacterLocation = GetCharacter()->GetActorLocation();
+		const FRotator CharacterRotation = GetCharacter()->GetActorRotation();
+		const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(CharacterLocation, MousePosition);
+		const FRotator NewRotation = FRotator(CharacterRotation.Pitch, LookRotation.Yaw, CharacterRotation.Roll);
+		GetCharacter()->SetActorRotation(NewRotation);
+	}
 }
 
 void AEmbercorePlayerController::ShowDamageNumber_Implementation(float DamageAmount,
                                                                  AEmbercoreCharacter* TargetCharacter) {
 	if (TargetCharacter) {
-		UEmbercoreDamageTextWidgetComponent* DamageText = NewObject<UEmbercoreDamageTextWidgetComponent>(
-			TargetCharacter, DamageNumberClass);
-		DamageText->RegisterComponent();
-		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(),
-		                              FAttachmentTransformRules::KeepRelativeTransform);
-		DamageText->SetDamageText(DamageAmount);
+		UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), DamageAmount);
 	}
 }
 
