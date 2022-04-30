@@ -14,13 +14,14 @@
 #include "EmbercorePlayerState.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Player/PlayerCharacter.h"
 #include "UI/EmbercoreDamageTextWidgetComponent.h"
 #include "UI/EmbercoreHUDWidget.h"
 
 AEmbercorePlayerController::AEmbercorePlayerController() {
 	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	DefaultMouseCursor = EMouseCursor::Default;
 }
 
 void AEmbercorePlayerController::CreateHUD() {
@@ -83,10 +84,14 @@ UEmbercoreHUDWidget* AEmbercorePlayerController::GetHUD() const {
 
 void AEmbercorePlayerController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
 	FVector MouseLocation, MouseDirection;
 	this->DeprojectMousePositionToWorld(MouseLocation, MouseDirection);
-	FRotator CurrentRotation = GetCharacter()->GetActorRotation();
-	FRotator NewRotation = FRotator(CurrentRotation.Pitch, MouseDirection.Rotation().Yaw, CurrentRotation.Roll);
+	const FVector MousePosition = (MouseDirection * 1000) + MouseLocation;
+	const FVector CharacterLocation = GetCharacter()->GetActorLocation();
+	const FRotator CharacterRotation = GetCharacter()->GetActorRotation();
+	const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(CharacterLocation, MousePosition);
+	const FRotator NewRotation = FRotator(CharacterRotation.Pitch, LookRotation.Yaw, CharacterRotation.Roll);
 	GetCharacter()->SetActorRotation(NewRotation);
 }
 
