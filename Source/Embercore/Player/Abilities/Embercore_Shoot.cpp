@@ -10,12 +10,11 @@
 #include "Embercore/Abilities/Tasks/EmbercoreAT_WaitReceiveDamage.h"
 #include "Embercore/Player/PlayerCharacter.h"
 #include "Embercore/Weapons/EmbercoreProjectile.h"
-#include "WebBrowser/Private/CEF/CEFTextInputMethodContext.h"
 
 UEmbercore_Shoot::UEmbercore_Shoot() {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	FGameplayTag ShootTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Shoot"));
+	FGameplayTag ShootTag = FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Ability1"));
 	AbilityTags.AddTag(ShootTag);
 	ActivationOwnedTags.AddTag(ShootTag);
 
