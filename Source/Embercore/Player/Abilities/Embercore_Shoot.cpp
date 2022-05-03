@@ -10,6 +10,7 @@
 #include "Embercore/Abilities/Tasks/EmbercoreAT_WaitReceiveDamage.h"
 #include "Embercore/Player/PlayerCharacter.h"
 #include "Embercore/Weapons/EmbercoreProjectile.h"
+#include "WebBrowser/Private/CEF/CEFTextInputMethodContext.h"
 
 UEmbercore_Shoot::UEmbercore_Shoot() {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -28,6 +29,7 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo,
                                        const FGameplayAbilityActivationInfo ActivationInfo,
                                        const FGameplayEventData* TriggerEventData) {
+
 	UE_LOG(LogTemp, Warning, TEXT("Shoot"));
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);

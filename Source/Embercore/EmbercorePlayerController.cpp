@@ -78,6 +78,12 @@ void AEmbercorePlayerController::CreateHUD() {
 	}
 }
 
+void AEmbercorePlayerController::BeginPlay() {
+	Super::BeginPlay();
+
+	this->EnableInput(this);
+}
+
 UEmbercoreHUDWidget* AEmbercorePlayerController::GetHUD() const {
 	return UIHUDWidget;
 }

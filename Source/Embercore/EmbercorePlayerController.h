@@ -16,6 +16,8 @@ public:
 	AEmbercorePlayerController();
 	void CreateHUD();
 
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere, Category = "Embercore|UI")
 	TSubclassOf<class UEmbercoreDamageTextWidgetComponent> DamageNumberClass;
 

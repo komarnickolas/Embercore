@@ -33,7 +33,7 @@ enum class EEmbercoreAbilityInputID : uint8 {
 	// 2 Cancel
 	Cancel UMETA(DisplayName = "Cancel"),
 	// 3 LMB
-	Shoot UMETA(DisplayName = "Shoot"),
+	Shoot UMETA(DisplayName = "Ability1"),
 	// 4 RMB
 	Ability2 UMETA(DisplayName = "Ability2"),
 	// 5 Q

@@ -23,7 +23,7 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	}
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(
 		TEXT("/Game/Characters/Player/BP_TopDownPlayerController"));
-	if (PlayerControllerBPClass.Class != NULL) {
+	if (PlayerControllerBPClass.Class != nullptr) {
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 }
