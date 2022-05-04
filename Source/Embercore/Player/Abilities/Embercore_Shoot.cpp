@@ -10,6 +10,7 @@
 #include "Embercore/Abilities/Tasks/EmbercoreAT_WaitReceiveDamage.h"
 #include "Embercore/Player/PlayerCharacter.h"
 #include "Embercore/Weapons/EmbercoreProjectile.h"
+#include "Embercore/Weapons/EmbercoreWeapon.h"
 
 UEmbercore_Shoot::UEmbercore_Shoot() {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
@@ -19,9 +20,6 @@ UEmbercore_Shoot::UEmbercore_Shoot() {
 	ActivationOwnedTags.AddTag(ShootTag);
 
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill")));
-
-	Range = 1000.0f;
-	Damage = 12.0f;
 }
 
 void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -72,17 +70,19 @@ void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData E
 	if (GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority && EventTag == FGameplayTag::RequestGameplayTag(
 		FName("Event.Montage.SpawnProjectile"))) {
 		APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+		TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->CurrentWeapon;
 		if (!Player) {
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		}
 		FRotator Rotation = Player->GetActorRotation();
 
 		FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-			DamageGameplayEffect, GetAbilityLevel());
+			EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetDamageGameplayEffect(), GetAbilityLevel());
 
 		// Pass the damage to the Damage Execution Calculation through a SetByCaller value on the GameplayEffectSpec
 		DamageEffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(
-			FGameplayTag::RequestGameplayTag(FName("Data.Damage")), Damage);
+			FGameplayTag::RequestGameplayTag(FName("Data.Damage")),
+			EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetDamage());
 
 		FTransform MuzzleTransform = Player->GetMesh()->GetSocketTransform(FName("MuzzleStationary"));
 		MuzzleTransform.SetRotation(Rotation.Quaternion());
@@ -92,10 +92,11 @@ void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData E
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		AEmbercoreProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEmbercoreProjectile>(
-			ProjectileClass, MuzzleTransform, GetOwningActorFromActorInfo(),
+			EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetProjectileClass(), MuzzleTransform,
+			GetOwningActorFromActorInfo(),
 			Player, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
-		Projectile->Range = Range;
+		Projectile->Range = EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetRange();
 		Projectile->FinishSpawning(MuzzleTransform);
 	}
 }

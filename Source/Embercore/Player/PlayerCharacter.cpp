@@ -12,6 +12,7 @@
 #include "Embercore/EmbercoreAttributeSet.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
 #include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
+#include "Embercore/Weapons/EmbercoreWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -156,6 +157,24 @@ void APlayerCharacter::FinishDying() {
 	Super::FinishDying();
 }
 
+void APlayerCharacter::SetCurrentWeapon(TSubclassOf<AEmbercoreWeapon> NewWeapon,
+                                        TSubclassOf<AEmbercoreWeapon> LastWeapon) {
+	TSubclassOf<AEmbercoreWeapon> LocalLastWeapon = NULL;
+	if (LastWeapon != NULL) {
+		LocalLastWeapon = LastWeapon;
+	}
+	else if (NewWeapon != CurrentWeapon) {
+		LocalLastWeapon = CurrentWeapon;
+	}
+	if (LocalLastWeapon) {
+		LocalLastWeapon->GetDefaultObject<AEmbercoreWeapon>()->OnUnEquip();
+	}
+	CurrentWeapon = NewWeapon;
+	if (NewWeapon) {
+		NewWeapon->GetDefaultObject<AEmbercoreWeapon>()->OnEquip();
+	}
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -171,6 +190,7 @@ void APlayerCharacter::BeginPlay() {
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
+	SetCurrentWeapon(StartingWeapon, nullptr);
 }
 
 void APlayerCharacter::PostInitializeComponents() {
