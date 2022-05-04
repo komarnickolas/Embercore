@@ -71,8 +71,9 @@ void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData E
 		FName("Event.Montage.SpawnProjectile"))) {
 		APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
 		TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->CurrentWeapon;
-		if (!Player) {
+		if (!Player || !EquippedWeapon) {
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+			return;
 		}
 		FRotator Rotation = Player->GetActorRotation();
 
