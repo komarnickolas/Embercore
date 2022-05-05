@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Embercore/EmbercoreCharacter.h"
+#include "Embercore/Inventory/InventoryComponent.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
 #include "PlayerCharacter.generated.h"
 
@@ -16,6 +17,7 @@ class EMBERCORE_API APlayerCharacter : public AEmbercoreCharacter {
 
 public:
 	APlayerCharacter(const class FObjectInitializer& ObjectInitializer);
+	void HandleWeaponAdded();
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -26,6 +28,8 @@ public:
 	class USpringArmComponent* GetCameraBoom();
 
 	class UCameraComponent* GetFollowCamera();
+
+	class UInventoryComponent* GetInventory();
 
 	UFUNCTION(BlueprintCallable, Category = "Embercore|Camera")
 	float GetStartingCameraBoomArmLength();
@@ -55,6 +59,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Embercore|Camera")
 	FVector StartingCameraBoomLocation;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	class UInventoryComponent* InventoryComponent;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Embercore|Camera")
 	class USpringArmComponent* CameraBoom;

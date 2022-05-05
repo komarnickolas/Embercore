@@ -9,30 +9,6 @@
 /**
  * 
  */
-USTRUCT(BlueprintType)
-struct FWeaponData {
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditDefaultsOnly, Category="Stats")
-	float Range;
-
-	UPROPERTY(EditDefaultsOnly, Category="Stats")
-	float FireRate;
-
-	UPROPERTY(EditDefaultsOnly, Category="Stats")
-	float Damage;
-
-	UPROPERTY(EditDefaultsOnly, Category="Stats")
-	int32 Level;
-
-	FWeaponData() {
-		Range = 10.0f;
-		FireRate = 10.0f;
-		Damage = 10.0f;
-		Level = 1;
-	}
-};
-
 
 UCLASS()
 class EMBERCORE_API AEmbercoreWeapon : public AActor {
@@ -43,7 +19,18 @@ public:
 	float GetRange() const;
 	TSubclassOf<AEmbercoreProjectile> GetProjectileClass() const;
 	TSubclassOf<UGameplayEffect> GetDamageGameplayEffect() const;
-	FWeaponData WeaponConfig;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Stats")
+	float Range;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Stats")
+	float FireRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Stats")
+	float Damage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Stats")
+	int32 Level;
 	void OnUnEquip();
 	void OnEquip();
 protected:

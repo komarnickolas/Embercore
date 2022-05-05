@@ -11,6 +11,7 @@
 #include "Embercore/EmbercorePlayerState.h"
 #include "Embercore/EmbercoreAttributeSet.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
+#include "Embercore/Inventory/InventoryComponent.h"
 #include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -66,6 +67,14 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	UIFloatingStatusBarComponent->SetWidgetClass(UIFloatingStatusBarClass);
 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
+	InventoryComponent->InventoryName = "Backpack";
+	InventoryComponent->Capacity = 3;
+}
+
+void APlayerCharacter::HandleWeaponAdded() {
+
 }
 
 // Called to bind functionality to input
@@ -133,6 +142,10 @@ UCameraComponent* APlayerCharacter::GetFollowCamera() {
 	return FollowCamera;
 }
 
+UInventoryComponent* APlayerCharacter::GetInventory() {
+	return InventoryComponent;
+}
+
 float APlayerCharacter::GetStartingCameraBoomArmLength() {
 	return StartingCameraBoomArmLength;
 }
@@ -182,7 +195,6 @@ void APlayerCharacter::SetCurrentWeapon(TSubclassOf<AEmbercoreWeapon> NewWeapon,
 */
 void APlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
-
 	// Only needed for Heroes placed in world and when the player is the Server.
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
@@ -190,7 +202,9 @@ void APlayerCharacter::BeginPlay() {
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
-	SetCurrentWeapon(StartingWeapon, nullptr);
+	if (InventoryComponent->AddItem("Rifle", "Rifle", StartingWeapon)) {
+		UE_LOG(LogTemp, Warning, TEXT("Added Weapon"));
+	};
 }
 
 void APlayerCharacter::PostInitializeComponents() {
