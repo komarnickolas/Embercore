@@ -4,15 +4,19 @@
 #include "EmbercoreWeapon.h"
 
 float AEmbercoreWeapon::GetFireRate() const {
-	return FireRate;
+	return WeaponStructure.FireRate;
 }
 
 float AEmbercoreWeapon::GetDamage() const {
-	return Damage;
+	return WeaponStructure.Damage;
 }
 
 float AEmbercoreWeapon::GetRange() const {
-	return Range;
+	return WeaponStructure.Range;
+}
+
+FText AEmbercoreWeapon::GetName() const {
+	return WeaponStructure.Name;
 }
 
 TSubclassOf<AEmbercoreProjectile> AEmbercoreWeapon::GetProjectileClass() const {

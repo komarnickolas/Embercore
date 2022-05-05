@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Weapons/WeaponData.h"
 #include "EmbercoreGameMode.generated.h"
 
 UCLASS(minimalapi)
@@ -13,6 +14,9 @@ class AEmbercoreGameMode : public AGameModeBase {
 public:
 	AEmbercoreGameMode();
 	void PlayerDied(AController* Controller);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Weapons")
+	FWeaponDataStructure FindWeapon(FName WeaponId, bool& Success);
 
 protected:
 	float RespawnDelay;
@@ -24,4 +28,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	void RespawnPlayer(AController* Controller);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapons")
+	class UWeaponData* WeaponDatabase;
 };

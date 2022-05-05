@@ -49,6 +49,21 @@ void AEmbercoreGameMode::PlayerDied(AController* Controller) {
 	}
 }
 
+FWeaponDataStructure AEmbercoreGameMode::FindWeapon_Implementation(FName WeaponId, bool& Success) {
+	Success = false;
+
+	FWeaponDataStructure WeaponDataStructure;
+	if (WeaponDatabase == nullptr) { return WeaponDataStructure; }
+
+	for (int i = 0; i < WeaponDatabase->Data.Num(); i++) {
+		if (WeaponDatabase->Data[i].WeaponId == WeaponId) {
+			Success = true;
+			return WeaponDatabase->Data[i];
+		}
+	}
+	return WeaponDataStructure;
+}
+
 void AEmbercoreGameMode::BeginPlay() {
 	Super::BeginPlay();
 
