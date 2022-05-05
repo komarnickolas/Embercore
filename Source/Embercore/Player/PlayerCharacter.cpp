@@ -204,6 +204,7 @@ void APlayerCharacter::BeginPlay() {
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
 	if (InventoryComponent->AddItem("Rifle", "Rifle", StartingWeapon)) {
 		UE_LOG(LogTemp, Warning, TEXT("Added Weapon"));
+		SetCurrentWeapon(StartingWeapon, nullptr);
 	};
 }
 
