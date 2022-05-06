@@ -23,13 +23,13 @@ public:
 	UFUNCTION()
 	bool AddItem(FString Name, FString Description, TSubclassOf<AActor> Actor);
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory|Items")
 	FString InventoryName;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory|Items")
 	int32 Capacity;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory|Items")
 	TArray<FItemStructure> Inventory;
 	FItemAddedEvent ItemAddedEvent;
 
@@ -52,11 +52,11 @@ public:
 	void OnRefreshWeaponInventory();
 
 	void AddWeapon(FName WeaponID);
+	int32 FindWeaponInventoryIndex(FName WeaponID);
 	void RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon);
-	bool HasFreeWeaponSlots();
+	bool HasFreeWeaponSlot();
 	bool HasEquippedWeapon(FName WeaponID);
-	void SwitchItem();
-	void UnequipAll();
+	void SwitchWeapon();
 
 
 protected:

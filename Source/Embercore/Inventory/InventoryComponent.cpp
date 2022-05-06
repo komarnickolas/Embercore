@@ -23,7 +23,6 @@ void UInventoryComponent::AddWeapon(FName WeaponID) {
 				IndexEquippedWeapon = i;
 				WeaponIDEquipped = WeaponID;
 				bHasEquippedWeapon = true;
-				WeaponInventory[i].SpawnedItem->SetActorHiddenInGame(false);
 			}
 			OnRefreshWeaponInventory();
 			return;
@@ -33,9 +32,57 @@ void UInventoryComponent::AddWeapon(FName WeaponID) {
 	AEmbercoreGameMode* GameMode = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode());
 	if (GameMode != nullptr) {
 		bool Found = false;
-		FWeaponDataStructure WeaponFound = GameMode->FindWeapon(WeaponID, Found);
+		const FWeaponDataStructure WeaponFound = GameMode->FindWeapon(WeaponID, Found);
 		if (Found && (WeaponFound.WeaponActor != nullptr)) {
+			WeaponInventory.Add(WeaponFound);
+			OnRefreshWeaponInventory();
 		}
+	}
+}
+
+int32 UInventoryComponent::FindWeaponInventoryIndex(FName WeaponID) {
+	for (int i = 0; i < WeaponInventory.Num(); i++) {
+		if (WeaponInventory[i].WeaponId == WeaponID) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+void UInventoryComponent::RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon) {
+	int32 IndexToRemove = FindWeaponInventoryIndex(WeaponID);
+	if (IndexToRemove >= 0) {
+		WeaponInventory.RemoveAt(IndexToRemove);
+	}
+	OnRefreshWeaponInventory();
+}
+
+bool UInventoryComponent::HasFreeWeaponSlot() {
+	return WeaponInventory.Num() < WeaponCapacity;
+}
+
+bool UInventoryComponent::HasEquippedWeapon(FName WeaponID) {
+	if (bHasEquippedWeapon) {
+		return WeaponID == WeaponIDEquipped;
+	}
+	return false;
+}
+
+void UInventoryComponent::SwitchWeapon() {
+	if (WeaponInventory.Num() == 0) { return; }
+
+	if (!bHasEquippedWeapon) {
+		IndexEquippedWeapon = 0;
+		bHasEquippedWeapon = true;
+		WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
+		return;
+	}
+	if (WeaponInventory.Num() > 1) {
+		IndexEquippedWeapon += 1;
+		if (IndexEquippedWeapon >= WeaponInventory.Num()) {
+			IndexEquippedWeapon = 0;
+		}
+		WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
 	}
 }
 

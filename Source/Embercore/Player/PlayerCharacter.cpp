@@ -71,6 +71,7 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
 	InventoryComponent->InventoryName = "Backpack";
 	InventoryComponent->Capacity = 3;
+	InventoryComponent->WeaponCapacity = 3;
 }
 
 void APlayerCharacter::HandleWeaponAdded() {
