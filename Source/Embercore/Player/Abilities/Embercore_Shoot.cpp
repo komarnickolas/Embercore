@@ -70,7 +70,7 @@ void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData E
 	if (GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority && EventTag == FGameplayTag::RequestGameplayTag(
 		FName("Event.Montage.SpawnProjectile"))) {
 		APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
-		TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->CurrentWeapon;
+		TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->GetCurrentWeapon();
 		if (!Player || !EquippedWeapon) {
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;

@@ -68,7 +68,14 @@ bool UInventoryComponent::HasEquippedWeapon(FName WeaponID) {
 	return false;
 }
 
-void UInventoryComponent::SwitchWeapon() {
+TSubclassOf<AEmbercoreWeapon> UInventoryComponent::GetCurrentlyEquippedWeapon() {
+	if (WeaponInventory.Num() > 0) {
+		return WeaponInventory[IndexEquippedWeapon].WeaponActor;
+	}
+	return {};
+}
+
+void UInventoryComponent::SwitchWeapon(int32 Direction) {
 	if (WeaponInventory.Num() == 0) { return; }
 
 	if (!bHasEquippedWeapon) {
@@ -78,7 +85,7 @@ void UInventoryComponent::SwitchWeapon() {
 		return;
 	}
 	if (WeaponInventory.Num() > 1) {
-		IndexEquippedWeapon += 1;
+		IndexEquippedWeapon += Direction;
 		if (IndexEquippedWeapon >= WeaponInventory.Num()) {
 			IndexEquippedWeapon = 0;
 		}

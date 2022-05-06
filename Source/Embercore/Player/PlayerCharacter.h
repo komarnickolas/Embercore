@@ -17,7 +17,6 @@ class EMBERCORE_API APlayerCharacter : public AEmbercoreCharacter {
 
 public:
 	APlayerCharacter(const class FObjectInitializer& ObjectInitializer);
-	void HandleWeaponAdded();
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -40,13 +39,12 @@ public:
 	class UEmbercoreFloatingStatusBarWidget* GetFloatingStatusBar();
 
 	virtual void FinishDying() override;
-	void SetCurrentWeapon(TSubclassOf<AEmbercoreWeapon> NewWeapon, TSubclassOf<AEmbercoreWeapon> LastWeapon);
-	UPROPERTY()
-	TSubclassOf<AEmbercoreWeapon> CurrentWeapon;
+
+	TSubclassOf<AEmbercoreWeapon> GetCurrentWeapon();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<AEmbercoreWeapon> StartingWeapon;
+	FName StartingWeapon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Embercore|Camera")
 	float BaseTurnRate = 45.0f;

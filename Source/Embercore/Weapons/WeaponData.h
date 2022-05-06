@@ -23,16 +23,10 @@ struct EMBERCORE_API FWeaponDataStructure {
 	FText Description;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
-	TSubclassOf<class AActor> WeaponActor;
+	TSubclassOf<class AEmbercoreWeapon> WeaponActor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
 	UTexture2D* WeaponIcon;
-
-	UPROPERTY(BlueprintReadOnly, Category="Weapon")
-	AActor* SpawnedItem;
-
-	UPROPERTY(BlueprintReadOnly, Category="Weapon")
-	int32 Quantity;
 };
 
 

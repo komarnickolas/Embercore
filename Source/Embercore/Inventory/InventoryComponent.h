@@ -56,7 +56,8 @@ public:
 	void RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon);
 	bool HasFreeWeaponSlot();
 	bool HasEquippedWeapon(FName WeaponID);
-	void SwitchWeapon();
+	TSubclassOf<AEmbercoreWeapon> GetCurrentlyEquippedWeapon();
+	void SwitchWeapon(int32 Direction);
 
 
 protected:

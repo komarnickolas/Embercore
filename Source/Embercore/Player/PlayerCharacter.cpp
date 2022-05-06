@@ -74,10 +74,6 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	InventoryComponent->WeaponCapacity = 3;
 }
 
-void APlayerCharacter::HandleWeaponAdded() {
-
-}
-
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -171,24 +167,6 @@ void APlayerCharacter::FinishDying() {
 	Super::FinishDying();
 }
 
-void APlayerCharacter::SetCurrentWeapon(TSubclassOf<AEmbercoreWeapon> NewWeapon,
-                                        TSubclassOf<AEmbercoreWeapon> LastWeapon) {
-	TSubclassOf<AEmbercoreWeapon> LocalLastWeapon = NULL;
-	if (LastWeapon != NULL) {
-		LocalLastWeapon = LastWeapon;
-	}
-	else if (NewWeapon != CurrentWeapon) {
-		LocalLastWeapon = CurrentWeapon;
-	}
-	if (LocalLastWeapon) {
-		LocalLastWeapon->GetDefaultObject<AEmbercoreWeapon>()->OnUnEquip();
-	}
-	CurrentWeapon = NewWeapon;
-	if (NewWeapon) {
-		NewWeapon->GetDefaultObject<AEmbercoreWeapon>()->OnEquip();
-	}
-}
-
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -203,6 +181,7 @@ void APlayerCharacter::BeginPlay() {
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
+	GetInventory()->AddWeapon(StartingWeapon);
 }
 
 void APlayerCharacter::PostInitializeComponents() {
@@ -262,6 +241,10 @@ void APlayerCharacter::InitializeFloatingStatusBar() {
 			}
 		}
 	}
+}
+
+TSubclassOf<AEmbercoreWeapon> APlayerCharacter::GetCurrentWeapon() {
+	return GetInventory()->GetCurrentlyEquippedWeapon();
 }
 
 // Client only
