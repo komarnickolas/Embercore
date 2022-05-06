@@ -30,6 +30,9 @@ struct EMBERCORE_API FWeaponDataStructure {
 
 	UPROPERTY(BlueprintReadOnly, Category="Weapon")
 	AActor* SpawnedItem;
+
+	UPROPERTY(BlueprintReadOnly, Category="Weapon")
+	int32 Quantity;
 };
 
 

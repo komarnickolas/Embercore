@@ -3,6 +3,8 @@
 
 #include "InventoryComponent.h"
 
+#include "Embercore/EmbercoreGameMode.h"
+
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
@@ -11,6 +13,30 @@ UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitial
 	PrimaryComponentTick.bCanEverTick = true;
 	InventoryName = "";
 	Capacity = 0;
+}
+
+
+void UInventoryComponent::AddWeapon(FName WeaponID) {
+	for (int i = 0; i < WeaponInventory.Num(); i++) {
+		if (WeaponInventory[i].WeaponId == WeaponID) {
+			if (!bHasEquippedWeapon) {
+				IndexEquippedWeapon = i;
+				WeaponIDEquipped = WeaponID;
+				bHasEquippedWeapon = true;
+				WeaponInventory[i].SpawnedItem->SetActorHiddenInGame(false);
+			}
+			OnRefreshWeaponInventory();
+			return;
+		}
+	}
+
+	AEmbercoreGameMode* GameMode = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode != nullptr) {
+		bool Found = false;
+		FWeaponDataStructure WeaponFound = GameMode->FindWeapon(WeaponID, Found);
+		if (Found && (WeaponFound.WeaponActor != nullptr)) {
+		}
+	}
 }
 
 // Called when the game starts

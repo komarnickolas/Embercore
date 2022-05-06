@@ -53,3 +53,4 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect;
 };
+	

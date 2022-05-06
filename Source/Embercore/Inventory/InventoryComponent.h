@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ItemStructure.h"
 #include "Components/ActorComponent.h"
+#include "Embercore/Weapons/WeaponData.h"
 #include "InventoryComponent.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -31,6 +32,32 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
 	TArray<FItemStructure> Inventory;
 	FItemAddedEvent ItemAddedEvent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
+	TArray<FWeaponDataStructure> WeaponInventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
+	int32 WeaponCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
+	bool bHasEquippedWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
+	int32 IndexEquippedWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
+	FName WeaponIDEquipped;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Events")
+	void OnRefreshWeaponInventory();
+
+	void AddWeapon(FName WeaponID);
+	void RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon);
+	bool HasFreeWeaponSlots();
+	bool HasEquippedWeapon(FName WeaponID);
+	void SwitchItem();
+	void UnequipAll();
+
 
 protected:
 	// Called when the game starts
