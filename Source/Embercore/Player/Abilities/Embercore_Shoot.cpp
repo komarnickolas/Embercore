@@ -26,8 +26,6 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo,
                                        const FGameplayAbilityActivationInfo ActivationInfo,
                                        const FGameplayEventData* TriggerEventData) {
-
-	UE_LOG(LogTemp, Warning, TEXT("Shoot"));
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
@@ -47,17 +45,14 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 }
 
 void UEmbercore_Shoot::OnCancelled(FGameplayTag EventTag, FGameplayEventData EventData) {
-	UE_LOG(LogTemp, Warning, TEXT("Cancelled"));
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 }
 
 void UEmbercore_Shoot::OnCompleted(FGameplayTag EventTag, FGameplayEventData EventData) {
-	UE_LOG(LogTemp, Warning, TEXT("Completed"));
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData EventData) {
-	UE_LOG(LogTemp, Warning, TEXT("Event Recieved"));
 	// Montage told us to end the ability before the montage finished playing.
 	// Montage was set to continue playing animation even after ability ends so this is okay.
 	if (EventTag == FGameplayTag::RequestGameplayTag(FName("Event.Montage.EndAbility"))) {

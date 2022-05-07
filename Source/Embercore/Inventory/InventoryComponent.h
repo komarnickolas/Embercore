@@ -48,8 +48,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory|Weapons")
 	FName WeaponIDEquipped;
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="Events")
-	void OnRefreshWeaponInventory();
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshWeaponInventory);
+
+	UPROPERTY(BlueprintAssignable, Category="Events")
+	FRefreshWeaponInventory OnRefreshWeaponInventory;
 
 	void AddWeapon(FName WeaponID);
 	int32 FindWeaponInventoryIndex(FName WeaponID);
@@ -57,6 +59,8 @@ public:
 	bool HasFreeWeaponSlot();
 	bool HasEquippedWeapon(FName WeaponID);
 	TSubclassOf<AEmbercoreWeapon> GetCurrentlyEquippedWeapon();
+
+	UFUNCTION()
 	void SwitchWeapon(int32 Direction);
 
 

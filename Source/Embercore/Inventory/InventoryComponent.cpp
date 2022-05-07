@@ -15,7 +15,6 @@ UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitial
 	Capacity = 0;
 }
 
-
 void UInventoryComponent::AddWeapon(FName WeaponID) {
 	for (int i = 0; i < WeaponInventory.Num(); i++) {
 		if (WeaponInventory[i].WeaponId == WeaponID) {
@@ -24,7 +23,7 @@ void UInventoryComponent::AddWeapon(FName WeaponID) {
 				WeaponIDEquipped = WeaponID;
 				bHasEquippedWeapon = true;
 			}
-			OnRefreshWeaponInventory();
+			OnRefreshWeaponInventory.Broadcast();
 			return;
 		}
 	}
@@ -35,9 +34,10 @@ void UInventoryComponent::AddWeapon(FName WeaponID) {
 		const FWeaponDataStructure WeaponFound = GameMode->FindWeapon(WeaponID, Found);
 		if (Found && (WeaponFound.WeaponActor != nullptr)) {
 			WeaponInventory.Add(WeaponFound);
-			OnRefreshWeaponInventory();
+			OnRefreshWeaponInventory.Broadcast();
 		}
 	}
+	OnRefreshWeaponInventory.Broadcast();
 }
 
 int32 UInventoryComponent::FindWeaponInventoryIndex(FName WeaponID) {
@@ -54,7 +54,7 @@ void UInventoryComponent::RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon
 	if (IndexToRemove >= 0) {
 		WeaponInventory.RemoveAt(IndexToRemove);
 	}
-	OnRefreshWeaponInventory();
+	OnRefreshWeaponInventory.Broadcast();
 }
 
 bool UInventoryComponent::HasFreeWeaponSlot() {
@@ -76,12 +76,14 @@ TSubclassOf<AEmbercoreWeapon> UInventoryComponent::GetCurrentlyEquippedWeapon() 
 }
 
 void UInventoryComponent::SwitchWeapon(int32 Direction) {
+	if (Direction == 0) { return; }
 	if (WeaponInventory.Num() == 0) { return; }
 
 	if (!bHasEquippedWeapon) {
 		IndexEquippedWeapon = 0;
 		bHasEquippedWeapon = true;
 		WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
+		OnRefreshWeaponInventory.Broadcast();
 		return;
 	}
 	if (WeaponInventory.Num() > 1) {
@@ -90,15 +92,14 @@ void UInventoryComponent::SwitchWeapon(int32 Direction) {
 			IndexEquippedWeapon = 0;
 		}
 		WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
+		OnRefreshWeaponInventory.Broadcast();
 	}
 }
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay() {
 	Super::BeginPlay();
-
-	// ...
-
+	OnRefreshWeaponInventory.Broadcast();
 }
 
 bool UInventoryComponent::AddItem(FString Name, FString Description, TSubclassOf<AActor> Actor) {
