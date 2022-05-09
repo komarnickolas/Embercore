@@ -56,11 +56,6 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	UIFloatingStatusBarComponent->SetDrawSize(FVector2D(50, 2));
 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
-
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
-	InventoryComponent->InventoryName = "Backpack";
-	InventoryComponent->Capacity = 3;
-	InventoryComponent->WeaponCapacity = 3;
 }
 
 void APlayerCharacter::PreviousWeapon() {
@@ -144,10 +139,6 @@ UCameraComponent* APlayerCharacter::GetFollowCamera() {
 	return FollowCamera;
 }
 
-UInventoryComponent* APlayerCharacter::GetInventory() {
-	return InventoryComponent;
-}
-
 float APlayerCharacter::GetStartingCameraBoomArmLength() {
 	return StartingCameraBoomArmLength;
 }
@@ -186,7 +177,7 @@ void APlayerCharacter::BeginPlay() {
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
-	GetInventory()->AddWeapon(StartingWeapon);
+	InventoryComponent->AddWeapon(StartingWeapon);
 }
 
 void APlayerCharacter::PostInitializeComponents() {
@@ -246,10 +237,6 @@ void APlayerCharacter::InitializeFloatingStatusBar() {
 			}
 		}
 	}
-}
-
-TSubclassOf<AEmbercoreWeapon> APlayerCharacter::GetCurrentWeapon() {
-	return GetInventory()->GetCurrentlyEquippedWeapon();
 }
 
 // Client only

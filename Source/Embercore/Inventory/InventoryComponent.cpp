@@ -69,10 +69,8 @@ bool UInventoryComponent::HasEquippedWeapon(FName WeaponID) {
 }
 
 TSubclassOf<AEmbercoreWeapon> UInventoryComponent::GetCurrentlyEquippedWeapon() {
-	if (WeaponInventory.Num() > 0) {
-		return WeaponInventory[IndexEquippedWeapon].WeaponActor;
-	}
-	return {};
+	if (WeaponInventory.Num() > 0) { return WeaponInventory[IndexEquippedWeapon].WeaponActor; }
+	return nullptr;
 }
 
 void UInventoryComponent::SelectWeapon(int32 Index) {

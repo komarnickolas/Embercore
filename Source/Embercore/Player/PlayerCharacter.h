@@ -31,8 +31,6 @@ public:
 
 	class UCameraComponent* GetFollowCamera();
 
-	class UInventoryComponent* GetInventory();
-
 	UFUNCTION(BlueprintCallable, Category = "Embercore|Camera")
 	float GetStartingCameraBoomArmLength();
 
@@ -42,8 +40,6 @@ public:
 	class UEmbercoreFloatingStatusBarWidget* GetFloatingStatusBar();
 
 	virtual void FinishDying() override;
-
-	TSubclassOf<AEmbercoreWeapon> GetCurrentWeapon();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -60,9 +56,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Embercore|Camera")
 	FVector StartingCameraBoomLocation;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	class UInventoryComponent* InventoryComponent;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Embercore|Camera")
 	class USpringArmComponent* CameraBoom;

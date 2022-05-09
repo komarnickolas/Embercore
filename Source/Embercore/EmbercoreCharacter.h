@@ -7,6 +7,8 @@
 #include "GameplayTagContainer.h"
 #include "AbilitySystemInterface.h"
 #include "Embercore.h"
+#include "Inventory/InventoryComponent.h"
+#include "Weapons/EmbercoreWeapon.h"
 #include "EmbercoreCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterBaseHitReactDelegate, EEmbercoreHitReactDirection, Direction);
@@ -19,6 +21,11 @@ class AEmbercoreCharacter : public ACharacter, public IAbilitySystemInterface {
 
 public:
 	AEmbercoreCharacter(const class FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	class UInventoryComponent* InventoryComponent;
+
+	class UInventoryComponent* GetInventory();
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
@@ -52,7 +59,6 @@ public:
 	virtual void PlayHitReact(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual void PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual bool PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser);
-
 
 	/**
 	* Getters for attributes from GDAttributeSetBase

@@ -30,9 +30,9 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
-	const TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->GetCurrentWeapon();
-	if (!Player || !EquippedWeapon) {
+	AEmbercoreCharacter* Character = Cast<AEmbercoreCharacter>(GetAvatarActorFromActorInfo());
+	const TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Character->InventoryComponent->GetCurrentlyEquippedWeapon();
+	if (!Character || !EquippedWeapon) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
 
@@ -76,13 +76,13 @@ void UEmbercore_Shoot::EventReceived(FGameplayTag EventTag, FGameplayEventData E
 }
 
 void UEmbercore_Shoot::FireProjectile() {
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
-	TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->GetCurrentWeapon();
-	if (!Player || !EquippedWeapon) {
+	AEmbercoreCharacter* Character = Cast<AEmbercoreCharacter>(GetAvatarActorFromActorInfo());
+	TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Character->InventoryComponent->GetCurrentlyEquippedWeapon();
+	if (!Character || !EquippedWeapon) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return;
 	}
-	FRotator Rotation = Player->GetActorRotation();
+	FRotator Rotation = Character->GetActorRotation();
 
 	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
 		EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetDamageGameplayEffect(), GetAbilityLevel());
@@ -92,7 +92,7 @@ void UEmbercore_Shoot::FireProjectile() {
 		FGameplayTag::RequestGameplayTag(FName("Data.Damage")),
 		EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetDamage());
 
-	FTransform MuzzleTransform = Player->GetMesh()->GetSocketTransform(FName("MuzzleStationary"));
+	FTransform MuzzleTransform = Character->GetMesh()->GetSocketTransform(FName("MuzzleStationary"));
 	MuzzleTransform.SetRotation(Rotation.Quaternion());
 	MuzzleTransform.SetScale3D(FVector(1.0f));
 
@@ -102,7 +102,7 @@ void UEmbercore_Shoot::FireProjectile() {
 	AEmbercoreProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEmbercoreProjectile>(
 		EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetProjectileClass(), MuzzleTransform,
 		GetOwningActorFromActorInfo(),
-		Player, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		Character, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
 	Projectile->Range = EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetRange();
 	Projectile->FinishSpawning(MuzzleTransform);
