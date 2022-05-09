@@ -33,4 +33,5 @@ protected:
 
 	UFUNCTION()
 	void EventReceived(FGameplayTag EventTag, FGameplayEventData EventData);
+	void FireProjectile();
 };

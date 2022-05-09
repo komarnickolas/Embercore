@@ -24,11 +24,11 @@ public:
 
 protected:
 	// Actual hard pointer to AbilitySystemComponent
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UEmbercoreAbilitySystemComponent* HardRefAbilitySystemComponent;
 
 	// Actual hard pointer to AttributeSetBase
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UEmbercoreAttributeSet* HardRefAttributeSetBase;
 
 	virtual void BeginPlay() override;

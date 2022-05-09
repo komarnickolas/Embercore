@@ -76,9 +76,9 @@ TSubclassOf<AEmbercoreWeapon> UInventoryComponent::GetCurrentlyEquippedWeapon() 
 }
 
 void UInventoryComponent::SelectWeapon(int32 Index) {
-	if (Index < 0) { return; }
-	if (WeaponInventory.Num() == 0) { return; }
 	if (!bHasEquippedWeapon) { return; }
+	if (WeaponInventory.Num() == 0) { return; }
+	if (Index < 0 || Index > WeaponInventory.Num()) { return; }
 	IndexEquippedWeapon = Index;
 	WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
 	OnRefreshWeaponInventory.Broadcast();
