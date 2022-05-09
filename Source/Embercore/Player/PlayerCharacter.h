@@ -20,6 +20,7 @@ public:
 
 	void PreviousWeapon();
 	void NextWeapon();
+	void SelectWeapon(int32 Index);
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

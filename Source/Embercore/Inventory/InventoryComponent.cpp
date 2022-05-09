@@ -75,6 +75,15 @@ TSubclassOf<AEmbercoreWeapon> UInventoryComponent::GetCurrentlyEquippedWeapon() 
 	return {};
 }
 
+void UInventoryComponent::SelectWeapon(int32 Index) {
+	if (Index < 0) { return; }
+	if (WeaponInventory.Num() == 0) { return; }
+	if (!bHasEquippedWeapon) { return; }
+	IndexEquippedWeapon = Index;
+	WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
+	OnRefreshWeaponInventory.Broadcast();
+}
+
 void UInventoryComponent::SwitchWeapon(int32 Direction) {
 	if (Direction == 0) { return; }
 	if (WeaponInventory.Num() == 0) { return; }

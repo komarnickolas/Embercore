@@ -71,6 +71,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TSubclassOf<AEmbercoreWeapon> GetCurrentlyEquippedWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void SelectWeapon(int32 Index);
+
 	UFUNCTION()
 	void SwitchWeapon(int32 Direction);
 

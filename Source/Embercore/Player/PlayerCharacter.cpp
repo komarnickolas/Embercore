@@ -71,6 +71,10 @@ void APlayerCharacter::NextWeapon() {
 	InventoryComponent->SwitchWeapon(1);
 }
 
+void APlayerCharacter::SelectWeapon(int32 Index) {
+	InventoryComponent->SelectWeapon(Index);
+}
+
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
