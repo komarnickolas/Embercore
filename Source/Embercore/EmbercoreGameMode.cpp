@@ -16,16 +16,6 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	// use our custom PlayerController class
 	PlayerControllerClass = AEmbercorePlayerController::StaticClass();
 	PlayerStateClass = AEmbercorePlayerState::StaticClass();
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
-		TEXT("/Game/Characters/Player/BP_TopDownCharacter"));
-	if (PlayerPawnBPClass.Class != nullptr) {
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(
-		TEXT("/Game/Characters/Player/BP_TopDownPlayerController"));
-	if (PlayerControllerBPClass.Class != nullptr) {
-		PlayerControllerClass = PlayerControllerBPClass.Class;
-	}
 }
 
 void AEmbercoreGameMode::PlayerDied(AController* Controller) {

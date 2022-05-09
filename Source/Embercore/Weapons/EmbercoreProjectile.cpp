@@ -18,4 +18,5 @@ AEmbercoreProjectile::AEmbercoreProjectile() {
 void AEmbercoreProjectile::BeginPlay() {
 	Super::BeginPlay();
 
+	SetLifeSpan(ProjectileMovement->InitialSpeed / Range);
 }

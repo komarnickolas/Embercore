@@ -67,15 +67,6 @@ void AEmbercorePlayerController::CreateHUD() {
 	UIHUDWidget->SetExperience(PS->GetXP());
 	UIHUDWidget->SetGold(PS->GetGold());
 	UIHUDWidget->SetLevel(PS->GetCharacterLevel());
-
-	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr,
-	                                    TEXT("/Game/UI/WC_DamageText.WC_DamageText_C"));
-	if (!DamageNumberClass) {
-		UE_LOG(LogTemp, Error,
-		       TEXT(
-			       "%s() Failed to find DamageNumberClass. If it was moved, please update the reference location in C++."
-		       ), *FString(__FUNCTION__));
-	}
 }
 
 void AEmbercorePlayerController::BeginPlay() {

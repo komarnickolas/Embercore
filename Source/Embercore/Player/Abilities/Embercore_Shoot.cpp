@@ -29,12 +29,18 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
+	APlayerCharacter* Player = Cast<APlayerCharacter>(GetAvatarActorFromActorInfo());
+	const TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Player->GetCurrentWeapon();
+	if (!Player || !EquippedWeapon) {
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	}
 
 	UAnimMontage* MontageToPlay = FireMontage;
 
 	// Play fire montage and wait for event telling us to spawn the projectile
 	UEmbercoreAT_PlayMontageAndWaitForEvent* Task = UEmbercoreAT_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
-		this, NAME_None, MontageToPlay, FGameplayTagContainer(), 1.0f, NAME_None, false, 1.0f);
+		this, NAME_None, MontageToPlay, FGameplayTagContainer(),
+		EquippedWeapon->GetDefaultObject<AEmbercoreWeapon>()->GetFireRate(), NAME_None, false, 1.0f);
 	Task->OnBlendOut.AddDynamic(this, &UEmbercore_Shoot::OnCompleted);
 	Task->OnCompleted.AddDynamic(this, &UEmbercore_Shoot::OnCompleted);
 	Task->OnInterrupted.AddDynamic(this, &UEmbercore_Shoot::OnCancelled);

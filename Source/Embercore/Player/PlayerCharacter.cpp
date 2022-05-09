@@ -55,17 +55,6 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	UIFloatingStatusBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	UIFloatingStatusBarComponent->SetDrawSize(FVector2D(50, 2));
 
-	UIFloatingStatusBarClass = StaticLoadClass(UObject::StaticClass(), nullptr,
-	                                           TEXT(
-		                                           "/Game/UI/UI_FloatingStatusBar_Player.UI_FloatingStatusBar_Player_C"));
-	if (!UIFloatingStatusBarClass) {
-		UE_LOG(LogTemp, Error,
-		       TEXT(
-			       "%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."
-		       ), *FString(__FUNCTION__));
-	}
-	UIFloatingStatusBarComponent->SetWidgetClass(UIFloatingStatusBarClass);
-
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));

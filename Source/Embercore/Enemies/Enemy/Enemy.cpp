@@ -40,16 +40,6 @@ AEnemy::AEnemy(const class FObjectInitializer& ObjectInitializer) : Super(Object
 	UIFloatingStatusBarComponent->SetRelativeLocation(FVector(0, 0, 120));
 	UIFloatingStatusBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	UIFloatingStatusBarComponent->SetDrawSize(FVector2D(50, 2));
-
-	UIFloatingStatusBarClass = StaticLoadClass(UObject::StaticClass(), nullptr,
-	                                           TEXT(
-		                                           "/Game/UI/UI_FloatingStatusBar_Minion.UI_FloatingStatusBar_Minion_C"));
-	if (!UIFloatingStatusBarClass) {
-		UE_LOG(LogTemp, Error,
-		       TEXT(
-			       "%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."
-		       ), *FString(__FUNCTION__));
-	}
 }
 
 void AEnemy::BeginPlay() {
