@@ -63,8 +63,12 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	InventoryComponent->WeaponCapacity = 3;
 }
 
-void APlayerCharacter::SwitchWeapon(float X) {
-	InventoryComponent->SwitchWeapon(X);
+void APlayerCharacter::PreviousWeapon() {
+	InventoryComponent->SwitchWeapon(-1);
+}
+
+void APlayerCharacter::NextWeapon() {
+	InventoryComponent->SwitchWeapon(1);
 }
 
 // Called to bind functionality to input
@@ -73,11 +77,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("SwitchWeapon", this, &APlayerCharacter::SwitchWeapon);
+
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &APlayerCharacter::NextWeapon);
+	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &APlayerCharacter::PreviousWeapon);
 
 	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 	BindASCInput();
 }
+
 
 // Server only
 void APlayerCharacter::PossessedBy(AController* NewController) {

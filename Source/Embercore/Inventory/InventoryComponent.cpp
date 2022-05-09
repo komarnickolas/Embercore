@@ -91,6 +91,9 @@ void UInventoryComponent::SwitchWeapon(int32 Direction) {
 		if (IndexEquippedWeapon >= WeaponInventory.Num()) {
 			IndexEquippedWeapon = 0;
 		}
+		if (IndexEquippedWeapon < 0) {
+			IndexEquippedWeapon = WeaponInventory.Num() - 1;
+		}
 		WeaponIDEquipped = WeaponInventory[IndexEquippedWeapon].WeaponId;
 		OnRefreshWeaponInventory.Broadcast();
 	}

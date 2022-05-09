@@ -53,11 +53,22 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Events")
 	FRefreshWeaponInventory OnRefreshWeaponInventory;
 
+	UFUNCTION(BlueprintCallable)
 	void AddWeapon(FName WeaponID);
+
+	UFUNCTION(BlueprintCallable)
 	int32 FindWeaponInventoryIndex(FName WeaponID);
+
+	UFUNCTION(BlueprintCallable)
 	void RemoveWeapon(FName WeaponID, bool RemoveEquippedWeapon);
+
+	UFUNCTION(BlueprintCallable)
 	bool HasFreeWeaponSlot();
+
+	UFUNCTION(BlueprintCallable)
 	bool HasEquippedWeapon(FName WeaponID);
+
+	UFUNCTION(BlueprintCallable)
 	TSubclassOf<AEmbercoreWeapon> GetCurrentlyEquippedWeapon();
 
 	UFUNCTION()
