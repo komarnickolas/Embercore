@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayEffect.h"
+#include "Embercore/EmbercoreCharacter.h"
 #include "EmbercoreProjectile.generated.h"
 
 UCLASS()
@@ -14,6 +15,9 @@ class EMBERCORE_API AEmbercoreProjectile : public AActor {
 public:
 	// Sets default values for this actor's properties
 	AEmbercoreProjectile();
+
+	UPROPERTY(BlueprintReadOnly)
+	TSubclassOf<AEmbercoreCharacter> Owner;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Meta = (ExposeOnSpawn = true))
 	float Range;

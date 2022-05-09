@@ -40,6 +40,8 @@ AEnemy::AEnemy(const class FObjectInitializer& ObjectInitializer) : Super(Object
 	UIFloatingStatusBarComponent->SetRelativeLocation(FVector(0, 0, 120));
 	UIFloatingStatusBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	UIFloatingStatusBarComponent->SetDrawSize(FVector2D(50, 2));
+
+	InventoryComponent->WeaponCapacity = 1;
 }
 
 void AEnemy::BeginPlay() {
