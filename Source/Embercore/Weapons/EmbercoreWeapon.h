@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EmbercoreProjectile.h"
+#include "NiagaraSystem.h"
 #include "EmbercoreWeapon.generated.h"
 
 /**
@@ -53,4 +54,3 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect;
 };
-	

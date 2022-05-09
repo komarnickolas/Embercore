@@ -5,6 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Embercore/Abilities/Tasks/EmbercoreAT_PlayMontageAndWaitForEvent.h"
 #include "Embercore/Abilities/Tasks/EmbercoreAT_WaitReceiveDamage.h"
