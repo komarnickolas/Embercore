@@ -176,6 +176,11 @@ void AEmbercorePlayerState::HealthChanged(const FOnAttributeChangeData& Data) {
 		if (PlayerFloatingStatusBar) {
 			PlayerFloatingStatusBar->SetHealthPercentage(Health / GetMaxHealth());
 		}
+		UEmbercoreHUDWidget* HUD = Player->GetController<AEmbercorePlayerController>()->GetHUD();
+		if (HUD) {
+			HUD->SetCurrentHealth(Health);
+			HUD->SetHealthPercentage(Health / GetMaxHealth());
+		}
 	}
 
 	// Update the HUD

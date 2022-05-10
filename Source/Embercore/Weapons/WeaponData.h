@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "EmbercoreWeapon.h"
-#include "UObject/Object.h"
 #include "WeaponData.generated.h"
 
 /**
