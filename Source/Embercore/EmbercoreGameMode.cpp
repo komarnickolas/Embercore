@@ -18,27 +18,6 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	PlayerStateClass = AEmbercorePlayerState::StaticClass();
 }
 
-void AEmbercoreGameMode::PlayerDied(AController* Controller) {
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	ASpectatorPawn* SpectatorPawn = GetWorld()->SpawnActor<ASpectatorPawn>(
-		SpectatorClass, Controller->GetPawn()->GetActorTransform(), SpawnParameters);
-
-	Controller->UnPossess();
-	Controller->Possess(SpectatorPawn);
-
-	FTimerHandle RespawnTimerHandle;
-	FTimerDelegate RespawnDelegate;
-
-	RespawnDelegate = FTimerDelegate::CreateUObject(this, &AEmbercoreGameMode::RespawnPlayer, Controller);
-	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnDelegate, RespawnDelay, false);
-
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(Controller);
-	if (PC) {
-		PC->SetRespawnCountdown(RespawnDelay);
-	}
-}
-
 FWeaponDataStructure AEmbercoreGameMode::FindWeapon_Implementation(FName WeaponId, bool& Success) {
 	Success = false;
 
@@ -65,38 +44,5 @@ void AEmbercoreGameMode::BeginPlay() {
 			EnemySpawnPoint = Actor;
 			break;
 		}
-	}
-}
-
-void AEmbercoreGameMode::RespawnPlayer(AController* Controller) {
-	if (Controller->IsPlayerController()) {
-		// Respawn player hero
-		AActor* PlayerStart = FindPlayerStart(Controller);
-
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		APlayerCharacter* Player = GetWorld()->SpawnActor<APlayerCharacter>(
-			PlayerClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation(), SpawnParameters);
-
-		APawn* OldSpectatorPawn = Controller->GetPawn();
-		Controller->UnPossess();
-		OldSpectatorPawn->Destroy();
-		Controller->Possess(Player);
-	}
-	else {
-		// Respawn AI hero
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		APlayerCharacter* Player = GetWorld()->SpawnActor<APlayerCharacter>(
-			PlayerClass, EnemySpawnPoint->GetActorTransform(), SpawnParameters);
-
-		APawn* OldSpectatorPawn = Controller->GetPawn();
-		Controller->UnPossess();
-		OldSpectatorPawn->Destroy();
-		Controller->Possess(Player);
 	}
 }

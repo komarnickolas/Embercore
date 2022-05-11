@@ -13,7 +13,9 @@ class AEmbercoreGameMode : public AGameModeBase {
 
 public:
 	AEmbercoreGameMode();
-	void PlayerDied(AController* Controller);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayerDied();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Weapons")
 	FWeaponDataStructure FindWeapon(FName WeaponId, bool& Success);
@@ -26,8 +28,6 @@ protected:
 	AActor* EnemySpawnPoint;
 
 	virtual void BeginPlay() override;
-
-	void RespawnPlayer(AController* Controller);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapons")
 	class UWeaponData* WeaponDatabase;

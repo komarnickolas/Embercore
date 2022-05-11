@@ -153,10 +153,8 @@ UEmbercoreFloatingStatusBarWidget* APlayerCharacter::GetFloatingStatusBar() {
 
 void APlayerCharacter::FinishDying() {
 	if (GetLocalRole() == ROLE_Authority) {
-		AEmbercoreGameMode* GM = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode());
-
-		if (GM) {
-			GM->PlayerDied(GetController());
+		if (AEmbercoreGameMode* GM = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode())) {
+			GM->PlayerDied();
 		}
 	}
 
