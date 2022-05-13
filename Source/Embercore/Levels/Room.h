@@ -17,11 +17,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 RoomWidth;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 RoomHeight;
+	int32 RoomLength;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
 	float FloorWidth;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
-	float FloorHeight;
+	float FloorLength;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
 	UStaticMesh* FloorMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
@@ -30,17 +30,17 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
 	float WallWidth;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
-	float WallHeight;
+	float WallLength;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
 	UStaticMesh* WallMesh;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
 	UMaterial* WallMaterial;
-	
-	UPROPERTY(EditAnywhere)
-	TArray<UStaticMeshComponent*> Floor;
 
-	UPROPERTY(EditAnywhere)
-	TArray<UStaticMeshComponent*> Wall;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UStaticMeshComponent* FloorComponent;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UStaticMeshComponent* WallComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,5 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Generate();
+	void AddFloor(float x, float y);
+	void AddWall(float x, float y, FRotator Rotator);
 	float GetRandomFloat(float Max, float Min);
 };
