@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FloorComponent.h"
 #include "GameFramework/Actor.h"
 #include "Room.generated.h"
 
@@ -18,14 +19,6 @@ public:
 	int32 RoomWidth;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 RoomLength;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
-	float FloorWidth;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
-	float FloorLength;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
-	UStaticMesh* FloorMesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Floor")
-	UMaterial* FloorMaterial;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
 	float WallWidth;
@@ -36,8 +29,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Wall")
 	UMaterial* WallMaterial;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UStaticMeshComponent* FloorComponent;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UFloorComponent* FloorComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UStaticMeshComponent* WallComponent;
@@ -52,7 +45,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Generate();
-	void AddFloor(float x, float y);
 	void AddWall(float x, float y, FRotator Rotator);
 	float GetRandomFloat(float Max, float Min);
 };
