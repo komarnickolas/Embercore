@@ -12,6 +12,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FVector4 Container;
 	UPROPERTY(BlueprintReadOnly)
+	FVector4 Room;
+	UPROPERTY(BlueprintReadOnly)
 	int32 Index;
 	UPROPERTY(BlueprintReadOnly)
 	int32 Left;
