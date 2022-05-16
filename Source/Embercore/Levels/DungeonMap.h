@@ -20,10 +20,18 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int32 Right;
 
-	FDungeonTree(): Index(0), Left(0), Right(0) {
+	bool IsLeaf() const {
+		return Left == -1 && Right == -1;
 	}
 
-	FDungeonTree(FVector4 C): Index(0), Left(0), Right(0) {
+	bool IsInternal() const {
+		return Left != -1 || Right != -1;
+	}
+
+	FDungeonTree(): Index(0), Left(-1), Right(-1) {
+	}
+
+	FDungeonTree(FVector4 C): Index(0), Left(-1), Right(-1) {
 		this->Container = C;
 	}
 };
@@ -38,12 +46,14 @@ public:
 	UDungeonMap();
 	UFUNCTION(BlueprintCallable)
 	void DrawDebug();
+	void DrawDebugContainer(FVector4 Container, FColor Color, float Z);
 	void DrawDebugNode(int32 NodeIndex);
 	UFUNCTION(BlueprintCallable)
 	void GenerateMap(FRandomStream Stream);
 	TArray<FVector4> SplitDungeonContainer(FVector4 Container);
 	int32 SplitDungeon(int32 iteration, FVector4 Container);
-	FVector2D RandomPosition(FVector4 Container);
+	float RandomPosition(float In);
+	void GenerateRooms(int32 Index);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Size;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
