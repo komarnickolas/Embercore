@@ -9,59 +9,64 @@ UDungeonMap::UDungeonMap() {
 }
 
 void UDungeonMap::DrawDebug() {
+	if (!IsValid(this)) { return; }
 	DrawDebugNode(0);
 }
 
-void UDungeonMap::DrawDebugContainer(FVector4 Container, FColor Color, float Z = 0) {
-	const float X = Container.X;
-	const float Y = Container.Y;
-	const float XMax = Container.X + Container.W;
-	const float YMax = Container.Y + Container.Z;
-	DrawDebugLine(GetWorld(), FVector(X, Y, Z), FVector(XMax, Y, Z), Color);
-	DrawDebugLine(GetWorld(), FVector(XMax, Y, Z), FVector(XMax, YMax, Z), Color);
-	DrawDebugLine(GetWorld(), FVector(X, YMax, Z), FVector(XMax, YMax, Z), Color);
-	DrawDebugLine(GetWorld(), FVector(X, Y, Z), FVector(X, YMax, Z), Color);
-
+void UDungeonMap::DrawDebugContainer(FRectInt Container, FColor Color, float Z = 0) {
+	DrawDebugLine(GetWorld(), Container.ToVector(Z), Container.ToXMaxVector(Z), Color);
+	DrawDebugLine(GetWorld(), Container.ToXMaxVector(Z), Container.ToMaxVector(Z), Color);
+	DrawDebugLine(GetWorld(), Container.ToYMaxVector(Z), Container.ToMaxVector(Z), Color);
+	DrawDebugLine(GetWorld(), Container.ToVector(Z), Container.ToYMaxVector(Z), Color);
 }
 
 void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
-	const FDungeonTree Node = Nodes[NodeIndex];
-	DrawDebugContainer(Node.Container, FColor::Green, 0);
-	DrawDebugContainer(Node.Room, FColor::Red, 1);
-	if (Node.Left != -1) { DrawDebugNode(Node.Left); }
-	if (Node.Right != -1) { DrawDebugNode(Node.Right); }
+	FSubDungeon& Node = Nodes[NodeIndex];
+	DrawDebugContainer(Node.Container, FColor::Green);
+	if (Node.IsLeaf()) {
+		DrawDebugContainer(Node.Room, FColor::Red, 1);
+	}
+	if (Node.Left != -1) {
+		DrawDebugNode(Node.Left);
+	}
+	if (Node.Right != -1) {
+		DrawDebugNode(Node.Right);
+	}
 }
 
 void UDungeonMap::GenerateMap(FRandomStream InStream) {
 	this->Stream = InStream;
-	SplitDungeon(Depth, FVector4(0, 0, Size, Size));
+	SplitDungeon(Depth, FRectInt(0, 0, Size, Size), -1);
 	GenerateRooms(0);
+	GenerateCorridors(0);
 	UE_LOG(LogTemp, Warning, TEXT("Dungeon Generated"));
 }
 
-TArray<FVector4> UDungeonMap::SplitDungeonContainer(FVector4 Container) {
-	TArray<FVector4> Array;
-	FVector4 C1, C2;
-	if (Stream.FRandRange(0, 1) >= 0.5f) {
-		C1 = FVector4(Container.X, Container.Y, RandomPosition(Container.Z), Container.W);
-		C2 = FVector4(Container.X, Container.Y + C1.Z, Container.Z - C1.Z, Container.W);
+TArray<FRectInt> UDungeonMap::SplitDungeonContainer(FRectInt Container) {
+	TArray<FRectInt> Array;
+	FRectInt C1, C2;
+	if (Stream.FRandRange(0, 1) > 0.5f) {
+		C1 = FRectInt(Container.X, Container.Y, Container.Width, RandomPosition(Container.Height));
+		C2 = FRectInt(Container.X, Container.Y + C1.Height, Container.Width, Container.Height - C1.Height);
 	}
 	else {
-		C1 = FVector4(Container.X, Container.Y, Container.Z, RandomPosition(Container.W));
-		C2 = FVector4(Container.X + C1.W, Container.Y, Container.Z, Container.W - C1.W);
+		C1 = FRectInt(Container.X, Container.Y, RandomPosition(Container.Width), Container.Height);
+		C2 = FRectInt(Container.X + C1.Width, Container.Y, Container.Width - C1.Width, Container.Height);
 	}
 	Array.Add(C1);
 	Array.Add(C2);
 	return Array;
 }
 
-int32 UDungeonMap::SplitDungeon(int32 iteration, FVector4 Container) {
-	const int32 Index = Nodes.Add(FDungeonTree(Container));
+int32 UDungeonMap::SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex) {
+	const int32 Index = Nodes.Add(FSubDungeon(Container));
+	Nodes[Index].Index = Index;
+	Nodes[Index].Parent = ParentIndex;
 	if (iteration == 0) { return Index; }
 
-	TArray<FVector4> SplitContainers = SplitDungeonContainer(Container);
-	Nodes[Index].Left = SplitDungeon(iteration - 1, SplitContainers[0]);
-	Nodes[Index].Right = SplitDungeon(iteration - 1, SplitContainers[1]);
+	TArray<FRectInt> SplitContainers = SplitDungeonContainer(Container);
+	Nodes[Index].Left = SplitDungeon(iteration - 1, SplitContainers[0], Index);
+	Nodes[Index].Right = SplitDungeon(iteration - 1, SplitContainers[1], Index);
 	return Index;
 }
 
@@ -70,17 +75,25 @@ float UDungeonMap::RandomPosition(float In) {
 }
 
 void UDungeonMap::GenerateRooms(int32 Index) {
-	FDungeonTree Node = Nodes[Index];
-	if (Node.IsLeaf()) {
-		const float RandomX = Stream.FRandRange(MinRoomDelta, Node.Container.W / 4);
-		const float RandomY = Stream.RandRange(MinRoomDelta, Node.Container.Z / 4);
-		Nodes[Index].Room.X = Node.Container.X + RandomX;
-		Nodes[Index].Room.Y = Node.Container.Y + RandomY;
-		Nodes[Index].Room.W = Node.Container.W - (RandomX * Stream.FRandRange(1, 2));
-		Nodes[Index].Room.Z = Node.Container.Z - (RandomY * Stream.FRandRange(1, 2));
+	if (Nodes[Index].IsLeaf()) {
+		float RandomX = Stream.FRandRange(MinRoomDelta, Nodes[Index].Container.Width / 4);
+		float RandomY = Stream.FRandRange(MinRoomDelta, Nodes[Index].Container.Height / 4);
+		float RoomX = Nodes[Index].Container.X + RandomX;
+		float RoomY = Nodes[Index].Container.Y + RandomY;
+		float RoomWidth = Nodes[Index].Container.Width - (RandomX * Stream.FRandRange(1, 2));
+		float RoomHeight = Nodes[Index].Container.Height - (RandomY * Stream.FRandRange(1, 2));
+		Nodes[Index].Room = FRectInt(RoomX, RoomY, RoomWidth, RoomHeight);
 	}
 	else {
-		if (Node.Left != -1) { GenerateRooms(Node.Left); }
-		if (Node.Right != -1) { GenerateRooms(Node.Right); }
+		if (Nodes[Index].Left != -1) { GenerateRooms(Nodes[Index].Left); }
+		if (Nodes[Index].Right != -1) { GenerateRooms(Nodes[Index].Right); }
 	}
+}
+
+void UDungeonMap::GenerateCorridors(int32 Index) {
+}
+
+FVector UDungeonMap::GetRandomPointFrom(FRectInt Room) {
+	return FVector(Stream.FRandRange(Room.X + 1, Room.GetXMax() - 1),
+	               Stream.FRandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
 }

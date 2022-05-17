@@ -17,5 +17,4 @@ void ADungeonGenerator::BeginPlay() {
 // Called every frame
 void ADungeonGenerator::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
