@@ -3,6 +3,8 @@
 
 #include "DungeonMap.h"
 
+#include "LineTypes.h"
+
 // FVector4(X=X,Y=Y,Z=Height,W=Width)
 
 UDungeonMap::UDungeonMap() {
@@ -11,6 +13,7 @@ UDungeonMap::UDungeonMap() {
 void UDungeonMap::DrawDebug() {
 	if (!IsValid(this)) { return; }
 	DrawDebugNode(0);
+	GenerateCorridors();
 }
 
 void UDungeonMap::DrawDebugContainer(FRectInt Container, FColor Color, float Z = 0) {
@@ -38,7 +41,6 @@ void UDungeonMap::GenerateMap(FRandomStream InStream) {
 	this->Stream = InStream;
 	SplitDungeon(Depth, FRectInt(0, 0, Size, Size), -1);
 	GenerateRooms(0);
-	GenerateCorridors(0);
 	UE_LOG(LogTemp, Warning, TEXT("Dungeon Generated"));
 }
 
@@ -90,7 +92,21 @@ void UDungeonMap::GenerateRooms(int32 Index) {
 	}
 }
 
-void UDungeonMap::GenerateCorridors(int32 Index) {
+void UDungeonMap::GenerateCorridors() {
+	for (const FSubDungeon& Node : Nodes) {
+		if (!Node.IsLeaf()) {
+			if (Nodes[Node.Left].IsLeaf() && Nodes[Node.Right].IsLeaf()) {
+				FRectInt LeftRoom = Nodes[Node.Left].Room;
+				FRectInt RightRoom = Nodes[Node.Right].Room;
+				FVector LeftPoint = GetRandomPointFrom(LeftRoom);
+				FVector RightPoint = GetRandomPointFrom(RightRoom);
+				DrawDebugLine(GetWorld(), LeftPoint, RightPoint, FColor::Blue);
+			}
+		}
+	}
+}
+
+void UDungeonMap::GenerateCorridorsBetweenChildren(int32 LeftIndex, int32 RightIndex) {
 }
 
 FVector UDungeonMap::GetRandomPointFrom(FRectInt Room) {

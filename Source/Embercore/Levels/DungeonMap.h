@@ -129,7 +129,8 @@ public:
 	int32 SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex);
 	float RandomPosition(float In);
 	void GenerateRooms(int32 Index);
-	void GenerateCorridors(int32 Index);
+	void GenerateCorridors();
+	void GenerateCorridorsBetweenChildren(int32 LeftIndex, int32 RightIndex);
 	FVector GetRandomPointFrom(FRectInt Room);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Size;
@@ -139,7 +140,7 @@ public:
 	int32 MinRoomDelta;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FSubDungeon> Nodes;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRectInt> Corridors;
 	UPROPERTY(VisibleAnywhere)
 	FRandomStream Stream;
