@@ -27,10 +27,10 @@ FRectInt UDungeonMap::GetEndingRoom() {
 }
 
 void UDungeonMap::DrawDebugContainer(FRectInt Container, FColor Color, float Z = 0) {
-	DrawDebugLine(GetWorld(), Container.ToVector(Z), Container.ToXMaxVector(Z), Color);
-	DrawDebugLine(GetWorld(), Container.ToXMaxVector(Z), Container.ToMaxVector(Z), Color);
-	DrawDebugLine(GetWorld(), Container.ToYMaxVector(Z), Container.ToMaxVector(Z), Color);
-	DrawDebugLine(GetWorld(), Container.ToVector(Z), Container.ToYMaxVector(Z), Color);
+	DrawDebugLine(GetWorld(), Container.ToVector(Z) * Scale, Container.ToXMaxVector(Z) * Scale, Color);
+	DrawDebugLine(GetWorld(), Container.ToXMaxVector(Z) * Scale, Container.ToMaxVector(Z) * Scale, Color);
+	DrawDebugLine(GetWorld(), Container.ToYMaxVector(Z) * Scale, Container.ToMaxVector(Z) * Scale, Color);
+	DrawDebugLine(GetWorld(), Container.ToVector(Z) * Scale, Container.ToYMaxVector(Z) * Scale, Color);
 }
 
 void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
@@ -47,24 +47,10 @@ void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
 	}
 }
 
-void UDungeonMap::InitializeTileMap() {
-	Tilemap.Empty();
-	for (int32 i = 0; i < Size; i++) {
-		for (int32 j = 0; j < Size; j++) {
-			Tilemap.Add(FVector2D(i, j), Space);
-		}
-	}
-}
-
-void UDungeonMap::GenerateTileMap() {
-	InitializeTileMap();
-}
-
 void UDungeonMap::GenerateMap(FRandomStream InStream) {
 	this->Stream = InStream;
 	SplitDungeon(Depth, FRectInt(0, 0, Size, Size), -1);
 	GenerateRooms(0);
-	GenerateTileMap();
 	UE_LOG(LogTemp, Warning, TEXT("Dungeon Generated"));
 }
 
@@ -181,4 +167,42 @@ void UDungeonMap::GenerateCorridorBetween(int32 LeftIndex, int32 RightIndex) {
 FVector UDungeonMap::GetRandomPointFrom(FRectInt Room) {
 	return FVector(Stream.FRandRange(Room.X + 1, Room.GetXMax() - 1),
 	               Stream.FRandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
+}
+
+void UDungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
+	Functor.ExecuteIfBound(Nodes[Index]);
+	if (Nodes[Index].Left != -1) { IterateNodes(Functor, Nodes[Index].Left); }
+	if (Nodes[Index].Right != -1) { IterateNodes(Functor, Nodes[Index].Right); }
+}
+
+void UDungeonMap::IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect) {
+	IterateEntireRoom(Iterator, Rect);
+	IterateRoomX(XIterator, Rect);
+	IterateRoomY(YIterator, Rect);
+}
+
+void UDungeonMap::IterateEntireRoom(FIterateRect Iterator, FRectInt Rect) {
+	for (float x = Rect.X; x < Rect.GetXMax(); x++) {
+		for (float y = Rect.Y; y < Rect.GetYMax(); y++) {
+			Iterator.ExecuteIfBound(x, y);
+		}
+	}
+}
+
+void UDungeonMap::IterateRoomX(FIterateRect Iterator, FRectInt Rect) {
+	for (float x = Rect.X; x < Rect.GetXMax(); x++) {
+		Iterator.ExecuteIfBound(x, Rect.Y);
+	}
+	for (float x = Rect.X; x < Rect.GetXMax(); x++) {
+		Iterator.ExecuteIfBound(x, Rect.GetYMax());
+	}
+}
+
+void UDungeonMap::IterateRoomY(FIterateRect Iterator, FRectInt Rect) {
+	for (float y = Rect.Y; y < Rect.GetYMax(); y++) {
+		Iterator.ExecuteIfBound(Rect.X, y);
+	}
+	for (float y = Rect.Y; y < Rect.GetYMax(); y++) {
+		Iterator.ExecuteIfBound(Rect.GetXMax(), y);
+	}
 }

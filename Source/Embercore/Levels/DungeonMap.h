@@ -6,13 +6,6 @@
 #include "UObject/Object.h"
 #include "DungeonMap.generated.h"
 
-UENUM(BlueprintType)
-enum ETileType {
-	Wall,
-	Floor,
-	Space
-};
-
 USTRUCT(BlueprintType)
 struct EMBERCORE_API FRectInt {
 	GENERATED_BODY()
@@ -142,8 +135,6 @@ public:
 	FRectInt GetEndingRoom();
 	void DrawDebugContainer(FRectInt Container, FColor Color, float Z);
 	void DrawDebugNode(int32 NodeIndex);
-	void InitializeTileMap();
-	void GenerateTileMap();
 	UFUNCTION(BlueprintCallable)
 	void GenerateMap(FRandomStream InStream);
 	TArray<FRectInt> SplitDungeonContainer(FRectInt Container);
@@ -171,6 +162,19 @@ public:
 	FRandomStream Stream;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRectInt> Corridors;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<FVector2D, TEnumAsByte<ETileType>> Tilemap;
+
+	DECLARE_DYNAMIC_DELEGATE_OneParam(FIterateNodes, FSubDungeon, SubDungeon);
+
+	DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateRect, float, X, float, Y);
+
+	UFUNCTION(BlueprintCallable)
+	void IterateNodes(FIterateNodes Functor, int32 Index);
+	UFUNCTION(BlueprintCallable)
+	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect);
+	UFUNCTION(BlueprintCallable)
+	void IterateEntireRoom(FIterateRect Iterator, FRectInt Rect);
+	UFUNCTION(BlueprintCallable)
+	void IterateRoomX(FIterateRect Iterator, FRectInt Rect);
+	UFUNCTION(BlueprintCallable)
+	void IterateRoomY(FIterateRect Iterator, FRectInt Rect);
 };
