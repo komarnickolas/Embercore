@@ -78,6 +78,24 @@ struct EMBERCORE_API FRectInt {
 };
 
 USTRUCT(BlueprintType)
+struct EMBERCORE_API FDungeonCorridor {
+	GENERATED_BODY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FRectInt> SubCorridors;
+
+	void Add(FRectInt In) {
+		SubCorridors.Add(In);
+	}
+
+	FDungeonCorridor() {
+	}
+
+	FDungeonCorridor(TArray<FRectInt> InSubCorridors) {
+		this->SubCorridors = InSubCorridors;
+	}
+};
+
+USTRUCT(BlueprintType)
 struct EMBERCORE_API FSubDungeon {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -94,6 +112,8 @@ struct EMBERCORE_API FSubDungeon {
 	int32 Left;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Right;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FDungeonCorridor> Corridors;
 
 	bool IsLeaf() const {
 		return Left == -1 && Right == -1;
@@ -143,7 +163,7 @@ public:
 	float RandomPosition(float In);
 	void GenerateRooms(int32 Index);
 	FRectInt GetRoomFor(int32 Index);
-	void GenerateCorridorBetween(int32 LeftIndex, int32 RightIndex);
+	FDungeonCorridor GenerateCorridorBetween(int32 LeftIndex, int32 RightIndex);
 	FVector GetRandomPointFrom(FRectInt Room);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Size;
@@ -165,8 +185,6 @@ public:
 	TArray<FSubDungeon> Nodes;
 	UPROPERTY(VisibleAnywhere)
 	FRandomStream Stream;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FRectInt> Corridors;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShowDebug;
 
