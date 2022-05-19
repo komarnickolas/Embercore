@@ -137,6 +137,7 @@ public:
 	void DrawDebugNode(int32 NodeIndex);
 	UFUNCTION(BlueprintCallable)
 	void GenerateMap(FRandomStream InStream);
+	bool SplitHorizontal(FRectInt Container);
 	TArray<FRectInt> SplitDungeonContainer(FRectInt Container);
 	int32 SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex);
 	float RandomPosition(float In);
@@ -150,6 +151,10 @@ public:
 	int32 Depth;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 MinRoomDelta;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 MinRoomWidth;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 MinRoomHeight;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 	int32 Scale;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
@@ -162,6 +167,8 @@ public:
 	FRandomStream Stream;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FRectInt> Corridors;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ShowDebug;
 
 	DECLARE_DYNAMIC_DELEGATE_OneParam(FIterateNodes, FSubDungeon, SubDungeon);
 
