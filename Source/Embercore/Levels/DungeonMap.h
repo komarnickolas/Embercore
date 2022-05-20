@@ -78,24 +78,6 @@ struct EMBERCORE_API FRectInt {
 };
 
 USTRUCT(BlueprintType)
-struct EMBERCORE_API FDungeonCorridor {
-	GENERATED_BODY()
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FRectInt> SubCorridors;
-
-	void Add(FRectInt In) {
-		SubCorridors.Add(In);
-	}
-
-	FDungeonCorridor() {
-	}
-
-	FDungeonCorridor(TArray<FRectInt> InSubCorridors) {
-		this->SubCorridors = InSubCorridors;
-	}
-};
-
-USTRUCT(BlueprintType)
 struct EMBERCORE_API FSubDungeon {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -112,8 +94,6 @@ struct EMBERCORE_API FSubDungeon {
 	int32 Left;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Right;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FDungeonCorridor> Corridors;
 
 	bool IsLeaf() const {
 		return Left == -1 && Right == -1;
@@ -163,7 +143,6 @@ public:
 	float RandomPosition(float In);
 	void GenerateRooms(int32 Index);
 	FRectInt GetRoomFor(int32 Index);
-	FDungeonCorridor GenerateCorridorBetween(int32 LeftIndex, int32 RightIndex);
 	FVector GetRandomPointFrom(FRectInt Room);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Size;
@@ -194,8 +173,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void IterateNodes(FIterateNodes Functor, int32 Index);
-	UFUNCTION(BlueprintCallable)
-	void IterateCorridor(FIterateRect Iterator, FIterateRect XIterator, FDungeonCorridor Corridor);
 	UFUNCTION(BlueprintCallable)
 	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect);
 	UFUNCTION(BlueprintCallable)

@@ -34,11 +34,6 @@ void UDungeonMap::DrawDebugContainer(FRectInt Container, FColor Color, float Z =
 void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
 	FSubDungeon& Node = Nodes[NodeIndex];
 	DrawDebugContainer(Node.Container, FColor::Green, -1);
-	for (FDungeonCorridor Corridor : Node.Corridors) {
-		for (FRectInt SubCorridor : Corridor.SubCorridors) {
-			DrawDebugContainer(SubCorridor, FColor::Blue, -1);
-		}
-	}
 	if (Node.IsLeaf()) {
 		DrawDebugContainer(Node.Room, FColor::Red, -1);
 	}
@@ -133,10 +128,6 @@ void UDungeonMap::GenerateRooms(int32 Index) {
 	}
 	if (Node.Left != -1) { GenerateRooms(Node.Left); }
 	if (Node.Right != -1) { GenerateRooms(Node.Right); }
-	if (!Node.IsLeaf()) {
-		FDungeonCorridor Corridor = GenerateCorridorBetween(Node.Left, Node.Right);
-		if (Corridor.SubCorridors.Num() > 0) { Node.Corridors.Add(Corridor); }
-	}
 }
 
 FRectInt UDungeonMap::GetRoomFor(int32 Index) {
@@ -155,72 +146,6 @@ FRectInt UDungeonMap::GetRoomFor(int32 Index) {
 	return FRectInt(-1, -1, 0, 0);
 }
 
-FDungeonCorridor UDungeonMap::GenerateCorridorBetween(int32 LeftIndex, int32 RightIndex) {
-	FDungeonCorridor Corridor;
-	FRectInt LeftRoom = GetRoomFor(LeftIndex);
-	FRectInt RightRoom = GetRoomFor(RightIndex);
-	if (RightRoom.X == -1 || LeftRoom.X == -1) { return FDungeonCorridor(); }
-	FVector LeftPoint = GetRandomPointFrom(LeftRoom);
-	FVector RightPoint = GetRandomPointFrom(RightRoom);
-	if (static_cast<int32>(LeftPoint.X) > static_cast<int32>(RightPoint.X)) {
-		std::swap(LeftPoint, RightPoint);
-	}
-	int32 Width = static_cast<int32>(LeftPoint.X - RightPoint.X);
-	int32 Height = static_cast<int32>(LeftPoint.Y - RightPoint.Y);
-	int32 AbsoluteWidth = FMathf::Abs(Width);
-	int32 AbsoluteHeight = FMathf::Abs(Height);
-	if (Width != 0) {
-		if (Height != 0) {
-			if (Stream.FRandRange(0, 1) > 0.5f) {
-				Corridor.Add(FRectInt(LeftPoint.X, LeftPoint.Y, AbsoluteWidth + 1, 1));
-				if (Height < 0) {
-					//        R
-					//        *
-					//        *
-					// L*******
-					Corridor.Add(FRectInt(RightPoint.X, LeftPoint.Y, 1, AbsoluteHeight));
-				}
-				if (Height > 0) {
-					// L*******
-					//        *
-					//        *
-					//        R
-					Corridor.Add(FRectInt(RightPoint.X, RightPoint.Y, 1, AbsoluteHeight));
-				}
-			}
-			else {
-				if (Height < 0) {
-					// *******R
-					// *
-					// *
-					// L
-					Corridor.Add(FRectInt(LeftPoint.X, LeftPoint.Y, 1, AbsoluteHeight));
-				}
-				if (Height > 0) {
-					// L
-					// *
-					// *
-					// *******R
-					Corridor.Add(FRectInt(LeftPoint.X, RightPoint.Y, 1, AbsoluteHeight));
-				}
-				Corridor.Add(FRectInt(LeftPoint.X, RightPoint.Y, AbsoluteWidth, 1));
-			}
-		}
-		else {
-			Corridor.Add(FRectInt(LeftPoint.X, LeftPoint.Y, AbsoluteWidth, 1));
-		}
-	}
-	else {
-		if (Height > 0) {
-			Corridor.Add(FRectInt(RightPoint.X, RightPoint.Y, 1, AbsoluteHeight));
-		}
-		if (Height < 0) {
-			Corridor.Add(FRectInt(LeftPoint.X, LeftPoint.Y, 1, AbsoluteHeight));
-		}
-	}
-	return Corridor;
-}
-
 FVector UDungeonMap::GetRandomPointFrom(FRectInt Room) {
 	return FVector(Stream.RandRange(Room.X + 1, Room.GetXMax() - 1),
 	               Stream.RandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
@@ -230,28 +155,6 @@ void UDungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
 	Functor.ExecuteIfBound(Nodes[Index]);
 	if (Nodes[Index].Left != -1) { IterateNodes(Functor, Nodes[Index].Left); }
 	if (Nodes[Index].Right != -1) { IterateNodes(Functor, Nodes[Index].Right); }
-}
-
-void UDungeonMap::IterateCorridor(FIterateRect Iterator, FIterateRect XIterator, FDungeonCorridor Corridor) {
-	TArray<FVector> Points;
-	if (Corridor.SubCorridors.Num() == 2) {
-		FRectInt LeftCorridor = Corridor.SubCorridors[0];
-		FRectInt RightCorridor = Corridor.SubCorridors[1];
-		IterateEntireRoom(XIterator, Corridor.SubCorridors[0]);
-		IterateEntireRoom(XIterator, Corridor.SubCorridors[1]);
-		int32 Width = FMath::Abs(LeftCorridor.X - RightCorridor.X);
-		int32 Height = FMath::Abs(LeftCorridor.Y - RightCorridor.Y);
-		Points.Add(LeftCorridor.ToVector());
-		Points.Add(RightCorridor.ToVector());
-		Points.Add(FVector(LeftCorridor.X, LeftCorridor.Y + Height + 1, 0));
-		Points.Add(FVector(LeftCorridor.X + 1, LeftCorridor.Y, 0));
-		Points.Add(FVector(RightCorridor.X, RightCorridor.Y + 1, 0));
-		Points.Add(FVector(RightCorridor.X - (Width - 1), RightCorridor.Y, 0));
-	}
-	for (FVector Vector : Points) {
-		Iterator.ExecuteIfBound(Vector.X, Vector.Y);
-	}
-
 }
 
 void UDungeonMap::IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect) {
