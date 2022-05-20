@@ -195,6 +195,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void IterateNodes(FIterateNodes Functor, int32 Index);
 	UFUNCTION(BlueprintCallable)
+	void IterateCorridor(FIterateRect Iterator, FIterateRect XIterator, FDungeonCorridor Corridor);
+	UFUNCTION(BlueprintCallable)
 	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect);
 	UFUNCTION(BlueprintCallable)
 	void IterateEntireRoom(FIterateRect Iterator, FRectInt Rect);
