@@ -16,6 +16,10 @@ void UDungeonMap::DrawDebug() {
 	DrawDebugNode(0);
 }
 
+FVector UDungeonMap::GetCenterOfRect(FRectInt RectInt) {
+	return RectInt.GetCenter();
+}
+
 FRectInt UDungeonMap::GetStartingRoom() {
 	return GetRoomFor(0);
 }

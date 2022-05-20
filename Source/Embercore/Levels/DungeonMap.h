@@ -130,6 +130,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DrawDebug();
 	UFUNCTION(BlueprintCallable)
+	FVector GetCenterOfRect(FRectInt RectInt);
+	UFUNCTION(BlueprintCallable)
 	FRectInt GetStartingRoom();
 	UFUNCTION(BlueprintCallable)
 	FRectInt GetEndingRoom();
@@ -142,6 +144,7 @@ public:
 	int32 SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex);
 	float RandomPosition(float In);
 	void GenerateRooms(int32 Index);
+	UFUNCTION(BlueprintCallable)
 	FRectInt GetRoomFor(int32 Index);
 	FVector GetRandomPointFrom(FRectInt Room);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
