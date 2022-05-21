@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/WidgetComponent.h"
 #include "InteractableComponent.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class EMBERCORE_API UInteractableComponent : public UActorComponent {
+class EMBERCORE_API UInteractableComponent : public UWidgetComponent {
 	GENERATED_BODY()
 
 public:
