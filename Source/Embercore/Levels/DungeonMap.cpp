@@ -21,11 +21,11 @@ FVector UDungeonMap::GetCenterOfRect(FRectInt RectInt) {
 }
 
 FRectInt UDungeonMap::GetStartingRoom() {
-	return GetRoomFor(0);
+	return FRectInt(0, -5, 3, 2);
 }
 
 FRectInt UDungeonMap::GetEndingRoom() {
-	return GetRoomFor(Nodes.Num() - 1);
+	return FRectInt(0, -1, 2, 3);
 }
 
 void UDungeonMap::DrawDebugContainer(FRectInt Container, FColor Color, float Z = 0) {

@@ -142,10 +142,12 @@ public:
 	bool SplitHorizontal(FRectInt Container);
 	TArray<FRectInt> SplitDungeonContainer(FRectInt Container);
 	int32 SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex);
+	UFUNCTION(BlueprintCallable)
 	float RandomPosition(float In);
 	void GenerateRooms(int32 Index);
 	UFUNCTION(BlueprintCallable)
 	FRectInt GetRoomFor(int32 Index);
+	UFUNCTION(BlueprintCallable)
 	FVector GetRandomPointFrom(FRectInt Room);
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 Size;
