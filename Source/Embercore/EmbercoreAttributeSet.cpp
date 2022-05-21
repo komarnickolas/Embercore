@@ -5,7 +5,7 @@
 
 #include "Embercore.h"
 #include "EmbercoreCharacter.h"
-#include "EmbercorePlayerController.h"
+#include "Player/EmbercorePlayerController.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
@@ -28,12 +28,6 @@ void UEmbercoreAttributeSet::PreAttributeChange(const FGameplayAttribute& Attrib
 	// GetMaxHealthAttribute comes from the Macros defined at the top of the header
 	{
 		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
-	}
-	else if (Attribute == GetMaxManaAttribute()) {
-		AdjustAttributeForMaxChange(Mana, MaxMana, NewValue, GetManaAttribute());
-	}
-	else if (Attribute == GetMaxStaminaAttribute()) {
-		AdjustAttributeForMaxChange(Stamina, MaxStamina, NewValue, GetStaminaAttribute());
 	}
 	else if (Attribute == GetMoveSpeedAttribute()) {
 		// Cannot slow less than 150 units/s and cannot boost more than 1000 units/s
@@ -185,14 +179,6 @@ void UEmbercoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 		// Handle other health changes.
 		// Health loss should go through Damage.
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-	} // Health
-	else if (Data.EvaluatedData.Attribute == GetManaAttribute()) {
-		// Handle mana changes.
-		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
-	} // Mana
-	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute()) {
-		// Handle stamina changes.
-		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 	}
 }
 
@@ -202,12 +188,6 @@ void UEmbercoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, HealthRegenRate, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, ManaRegenRate, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, StaminaRegenRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEmbercoreAttributeSet, CharacterLevel, COND_None, REPNOTIFY_Always);
@@ -244,30 +224,6 @@ void UEmbercoreAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMa
 
 void UEmbercoreAttributeSet::OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate) {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, HealthRegenRate, OldHealthRegenRate);
-}
-
-void UEmbercoreAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, Mana, OldMana);
-}
-
-void UEmbercoreAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, MaxMana, OldMaxMana);
-}
-
-void UEmbercoreAttributeSet::OnRep_ManaRegenRate(const FGameplayAttributeData& OldManaRegenRate) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, ManaRegenRate, OldManaRegenRate);
-}
-
-void UEmbercoreAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, Stamina, OldStamina);
-}
-
-void UEmbercoreAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, MaxStamina, OldMaxStamina);
-}
-
-void UEmbercoreAttributeSet::OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate) {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEmbercoreAttributeSet, StaminaRegenRate, OldStaminaRegenRate);
 }
 
 void UEmbercoreAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) {

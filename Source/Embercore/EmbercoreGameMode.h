@@ -23,7 +23,7 @@ public:
 protected:
 	float RespawnDelay;
 
-	TSubclassOf<class APlayerCharacter> PlayerClass;
+	TSubclassOf<class AEmbercorePlayer> PlayerClass;
 
 	AActor* EnemySpawnPoint;
 

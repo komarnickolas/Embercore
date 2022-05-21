@@ -47,36 +47,6 @@ public:
 	FGameplayAttributeData HealthRegenRate;
 	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, HealthRegenRate)
 
-	// Current Mana, used to execute special abilities. Capped by MaxMana.
-	UPROPERTY(BlueprintReadOnly, Category = "Mana", ReplicatedUsing = OnRep_Mana)
-	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, Mana)
-
-	// MaxMana is its own attribute since GameplayEffects may modify it
-	UPROPERTY(BlueprintReadOnly, Category = "Mana", ReplicatedUsing = OnRep_MaxMana)
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, MaxMana)
-
-	// Mana regen rate will passively increase Mana every second
-	UPROPERTY(BlueprintReadOnly, Category = "Mana", ReplicatedUsing = OnRep_ManaRegenRate)
-	FGameplayAttributeData ManaRegenRate;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, ManaRegenRate)
-
-	// Current stamina, used to execute special abilities. Capped by MaxStamina.
-	UPROPERTY(BlueprintReadOnly, Category = "Stamina", ReplicatedUsing = OnRep_Stamina)
-	FGameplayAttributeData Stamina;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, Stamina)
-
-	// MaxStamina is its own attribute since GameplayEffects may modify it
-	UPROPERTY(BlueprintReadOnly, Category = "Stamina", ReplicatedUsing = OnRep_MaxStamina)
-	FGameplayAttributeData MaxStamina;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, MaxStamina)
-
-	// Stamina regen rate will passively increase Stamina every second
-	UPROPERTY(BlueprintReadOnly, Category = "Stamina", ReplicatedUsing = OnRep_StaminaRegenRate)
-	FGameplayAttributeData StaminaRegenRate;
-	ATTRIBUTE_ACCESSORS(UEmbercoreAttributeSet, StaminaRegenRate)
-
 	// Armor reduces the amount of damage done by attackers
 	UPROPERTY(BlueprintReadOnly, Category = "Armor", ReplicatedUsing = OnRep_Armor)
 	FGameplayAttributeData Armor;

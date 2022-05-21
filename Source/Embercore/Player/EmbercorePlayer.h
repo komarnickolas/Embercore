@@ -3,20 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EmbercorePlayerHUD.h"
 #include "Embercore/EmbercoreCharacter.h"
 #include "Embercore/Inventory/InventoryComponent.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
-#include "PlayerCharacter.generated.h"
+#include "EmbercorePlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EMBERCORE_API APlayerCharacter : public AEmbercoreCharacter {
+class EMBERCORE_API AEmbercorePlayer : public AEmbercoreCharacter {
 	GENERATED_BODY()
 
 public:
-	APlayerCharacter(const class FObjectInitializer& ObjectInitializer);
+	AEmbercorePlayer(const class FObjectInitializer& ObjectInitializer);
 
 	void PreviousWeapon();
 	void NextWeapon();
@@ -40,6 +41,8 @@ public:
 	class UEmbercoreFloatingStatusBarWidget* GetFloatingStatusBar();
 
 	virtual void FinishDying() override;
+	UFUNCTION(BlueprintCallable)
+	AEmbercorePlayerHUD* GetHUD();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)

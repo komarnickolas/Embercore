@@ -1,14 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Embercore/Player/PlayerCharacter.h"
+#include "Embercore/Player/EmbercorePlayer.h"
 
+#include "EmbercorePlayerController.h"
+#include "EmbercorePlayerHUD.h"
+#include "EmbercorePlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Embercore/EmbercoreGameMode.h"
-#include "Embercore/EmbercorePlayerController.h"
-#include "Embercore/EmbercorePlayerState.h"
 #include "Embercore/EmbercoreAttributeSet.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
 #include "Embercore/Inventory/InventoryComponent.h"
@@ -19,7 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+AEmbercorePlayer::AEmbercorePlayer(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -58,27 +59,27 @@ APlayerCharacter::APlayerCharacter(const class FObjectInitializer& ObjectInitial
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 }
 
-void APlayerCharacter::PreviousWeapon() {
+void AEmbercorePlayer::PreviousWeapon() {
 	InventoryComponent->SwitchWeapon(-1);
 }
 
-void APlayerCharacter::NextWeapon() {
+void AEmbercorePlayer::NextWeapon() {
 	InventoryComponent->SwitchWeapon(1);
 }
 
-void APlayerCharacter::SelectWeapon(int32 Index) {
+void AEmbercorePlayer::SelectWeapon(int32 Index) {
 	InventoryComponent->SelectWeapon(Index);
 }
 
 // Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
+void AEmbercorePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AEmbercorePlayer::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AEmbercorePlayer::MoveRight);
 
-	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &APlayerCharacter::NextWeapon);
-	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &APlayerCharacter::PreviousWeapon);
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &AEmbercorePlayer::NextWeapon);
+	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AEmbercorePlayer::PreviousWeapon);
 
 	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 	BindASCInput();
@@ -86,7 +87,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 
 // Server only
-void APlayerCharacter::PossessedBy(AController* NewController) {
+void AEmbercorePlayer::PossessedBy(AController* NewController) {
 	Super::PossessedBy(NewController);
 
 	AEmbercorePlayerState* PS = GetPlayerState<AEmbercorePlayerState>();
@@ -122,36 +123,35 @@ void APlayerCharacter::PossessedBy(AController* NewController) {
 
 		AddCharacterAbilities();
 
-		AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetController());
-		if (PC) {
-			PC->CreateHUD();
-		}
-
 		InitializeFloatingStatusBar();
 	}
 }
 
-USpringArmComponent* APlayerCharacter::GetCameraBoom() {
+AEmbercorePlayerHUD* AEmbercorePlayer::GetHUD() {
+	return Cast<AEmbercorePlayerHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+}
+
+USpringArmComponent* AEmbercorePlayer::GetCameraBoom() {
 	return CameraBoom;
 }
 
-UCameraComponent* APlayerCharacter::GetFollowCamera() {
+UCameraComponent* AEmbercorePlayer::GetFollowCamera() {
 	return FollowCamera;
 }
 
-float APlayerCharacter::GetStartingCameraBoomArmLength() {
+float AEmbercorePlayer::GetStartingCameraBoomArmLength() {
 	return StartingCameraBoomArmLength;
 }
 
-FVector APlayerCharacter::GetStartingCameraBoomLocation() {
+FVector AEmbercorePlayer::GetStartingCameraBoomLocation() {
 	return StartingCameraBoomLocation;
 }
 
-UEmbercoreFloatingStatusBarWidget* APlayerCharacter::GetFloatingStatusBar() {
+UEmbercoreFloatingStatusBarWidget* AEmbercorePlayer::GetFloatingStatusBar() {
 	return UIFloatingStatusBar;
 }
 
-void APlayerCharacter::FinishDying() {
+void AEmbercorePlayer::FinishDying() {
 	if (GetLocalRole() == ROLE_Authority) {
 		if (AEmbercoreGameMode* GM = Cast<AEmbercoreGameMode>(GetWorld()->GetAuthGameMode())) {
 			GM->PlayerDied();
@@ -166,7 +166,7 @@ void APlayerCharacter::FinishDying() {
 * On the Client, BeginPlay happens before Possession.
 * So we can't use BeginPlay to do anything with the AbilitySystemComponent because we don't have it until the PlayerState replicates from possession.
 */
-void APlayerCharacter::BeginPlay() {
+void AEmbercorePlayer::BeginPlay() {
 	Super::BeginPlay();
 	// Only needed for Heroes placed in world and when the player is the Server.
 	// On respawn, they are set up in PossessedBy.
@@ -178,43 +178,43 @@ void APlayerCharacter::BeginPlay() {
 	InventoryComponent->AddWeapon(StartingWeapon);
 }
 
-void APlayerCharacter::PostInitializeComponents() {
+void AEmbercorePlayer::PostInitializeComponents() {
 	Super::PostInitializeComponents();
 }
 
-void APlayerCharacter::LookUp(float Value) {
+void AEmbercorePlayer::LookUp(float Value) {
 	if (IsAlive()) {
 		AddControllerPitchInput(Value);
 	}
 }
 
-void APlayerCharacter::LookUpRate(float Value) {
+void AEmbercorePlayer::LookUpRate(float Value) {
 	if (IsAlive()) {
 		AddControllerPitchInput(Value * BaseLookUpRate * GetWorld()->DeltaTimeSeconds);
 	}
 }
 
-void APlayerCharacter::Turn(float Value) {
+void AEmbercorePlayer::Turn(float Value) {
 	if (IsAlive()) {
 		AddControllerYawInput(Value);
 	}
 }
 
-void APlayerCharacter::TurnRate(float Value) {
+void AEmbercorePlayer::TurnRate(float Value) {
 	if (IsAlive()) {
 		AddControllerYawInput(Value * BaseTurnRate * GetWorld()->DeltaTimeSeconds);
 	}
 }
 
-void APlayerCharacter::MoveForward(float Value) {
+void AEmbercorePlayer::MoveForward(float Value) {
 	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
 }
 
-void APlayerCharacter::MoveRight(float Value) {
+void AEmbercorePlayer::MoveRight(float Value) {
 	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
 }
 
-void APlayerCharacter::InitializeFloatingStatusBar() {
+void AEmbercorePlayer::InitializeFloatingStatusBar() {
 	// Only create once
 	if (UIFloatingStatusBar || !AbilitySystemComponent.IsValid()) {
 		return;
@@ -238,7 +238,7 @@ void APlayerCharacter::InitializeFloatingStatusBar() {
 }
 
 // Client only
-void APlayerCharacter::OnRep_PlayerState() {
+void AEmbercorePlayer::OnRep_PlayerState() {
 	Super::OnRep_PlayerState();
 
 	AEmbercorePlayerState* PS = GetPlayerState<AEmbercorePlayerState>();
@@ -259,11 +259,6 @@ void APlayerCharacter::OnRep_PlayerState() {
 		// For now assume possession = spawn/respawn.
 		InitializeAttributes();
 
-		AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetController());
-		if (PC) {
-			PC->CreateHUD();
-		}
-
 		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
 		InitializeFloatingStatusBar();
 
@@ -280,7 +275,7 @@ void APlayerCharacter::OnRep_PlayerState() {
 	}
 }
 
-void APlayerCharacter::BindASCInput() {
+void AEmbercorePlayer::BindASCInput() {
 	if (!ASCInputBound && AbilitySystemComponent.IsValid() && IsValid(InputComponent)) {
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(
 			                                                              FString("ConfirmTarget"),

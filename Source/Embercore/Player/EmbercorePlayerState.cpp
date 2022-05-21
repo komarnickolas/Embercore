@@ -3,13 +3,13 @@
 
 #include "EmbercorePlayerState.h"
 
-#include "EmbercoreCharacter.h"
-#include "EmbercoreAttributeSet.h"
 #include "EmbercorePlayerController.h"
-#include "Abilities/EmbercoreAbilitySystemComponent.h"
-#include "Player/PlayerCharacter.h"
-#include "UI/EmbercoreFloatingStatusBarWidget.h"
-#include "UI/EmbercoreHUDWidget.h"
+#include "EmbercorePlayerHUD.h"
+#include "EmbercorePlayer.h"
+#include "Embercore/EmbercoreAttributeSet.h"
+#include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
+#include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
+#include "Embercore/UI/EmbercoreHUDWidget.h"
 
 AEmbercorePlayerState::AEmbercorePlayerState() {
 	// Create ability system component, and set it to be explicitly replicated
@@ -168,24 +168,13 @@ void AEmbercorePlayerState::BeginPlay() {
 
 void AEmbercorePlayerState::HealthChanged(const FOnAttributeChangeData& Data) {
 	float Health = Data.NewValue;
-
-	// Update floating status bar
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetPawn());
+	AEmbercorePlayer* Player = Cast<AEmbercorePlayer>(GetPawn());
 	if (Player) {
 		UEmbercoreFloatingStatusBarWidget* PlayerFloatingStatusBar = Player->GetFloatingStatusBar();
 		if (PlayerFloatingStatusBar) {
 			PlayerFloatingStatusBar->SetHealthPercentage(Health / GetMaxHealth());
 		}
-		UEmbercoreHUDWidget* HUD = Player->GetController<AEmbercorePlayerController>()->GetHUD();
-		if (HUD) {
-			HUD->SetCurrentHealth(Health);
-			HUD->SetHealthPercentage(Health / GetMaxHealth());
-		}
 	}
-
-	// Update the HUD
-	// Handled in the UI itself using the AsyncTaskAttributeChanged node as an example how to do it in Blueprint
-
 	// If the player died, handle death
 	if (!IsAlive() && !AbilitySystemComponent->HasMatchingGameplayTag(DeadTag)) {
 		if (Player) {
@@ -196,160 +185,21 @@ void AEmbercorePlayerState::HealthChanged(const FOnAttributeChangeData& Data) {
 
 void AEmbercorePlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data) {
 	float MaxHealth = Data.NewValue;
-
-	// Update floating status bar
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetPawn());
+	AEmbercorePlayer* Player = Cast<AEmbercorePlayer>(GetPawn());
 	if (Player) {
 		UEmbercoreFloatingStatusBarWidget* PlayerFloatingStatusBar = Player->GetFloatingStatusBar();
 		if (PlayerFloatingStatusBar) {
 			PlayerFloatingStatusBar->SetHealthPercentage(GetHealth() / MaxHealth);
 		}
 	}
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetMaxHealth(MaxHealth);
-		}
-	}
 }
 
 void AEmbercorePlayerState::HealthRegenRateChanged(const FOnAttributeChangeData& Data) {
 	float HealthRegenRate = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetHealthRegenRate(HealthRegenRate);
-		}
-	}
-}
-
-void AEmbercorePlayerState::ManaChanged(const FOnAttributeChangeData& Data) {
-	float Mana = Data.NewValue;
-
-	// Update floating status bar
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetPawn());
-	if (Player) {
-		UEmbercoreFloatingStatusBarWidget* PlayerFloatingStatusBar = Player->GetFloatingStatusBar();
-		if (PlayerFloatingStatusBar) {
-			PlayerFloatingStatusBar->SetManaPercentage(Mana / GetMaxMana());
-		}
-	}
-
-	// Update the HUD
-	// Handled in the UI itself using the AsyncTaskAttributeChanged node as an example how to do it in Blueprint
-}
-
-void AEmbercorePlayerState::MaxManaChanged(const FOnAttributeChangeData& Data) {
-	float MaxMana = Data.NewValue;
-
-	// Update floating status bar
-	APlayerCharacter* Player = Cast<APlayerCharacter>(GetPawn());
-	if (Player) {
-		UEmbercoreFloatingStatusBarWidget* PlayerFloatingStatusBar = Player->GetFloatingStatusBar();
-		if (PlayerFloatingStatusBar) {
-			PlayerFloatingStatusBar->SetManaPercentage(GetMana() / MaxMana);
-		}
-	}
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetMaxMana(MaxMana);
-		}
-	}
-}
-
-void AEmbercorePlayerState::ManaRegenRateChanged(const FOnAttributeChangeData& Data) {
-	float ManaRegenRate = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetManaRegenRate(ManaRegenRate);
-		}
-	}
-}
-
-void AEmbercorePlayerState::StaminaChanged(const FOnAttributeChangeData& Data) {
-	float Stamina = Data.NewValue;
-
-	// Update the HUD
-	// Handled in the UI itself using the AsyncTaskAttributeChanged node as an example how to do it in Blueprint
-}
-
-void AEmbercorePlayerState::MaxStaminaChanged(const FOnAttributeChangeData& Data) {
-	float MaxStamina = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetMaxStamina(MaxStamina);
-		}
-	}
-}
-
-void AEmbercorePlayerState::StaminaRegenRateChanged(const FOnAttributeChangeData& Data) {
-	float StaminaRegenRate = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetStaminaRegenRate(StaminaRegenRate);
-		}
-	}
-}
-
-void AEmbercorePlayerState::XPChanged(const FOnAttributeChangeData& Data) {
-	float XP = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetExperience(XP);
-		}
-	}
-}
-
-void AEmbercorePlayerState::GoldChanged(const FOnAttributeChangeData& Data) {
-	float Gold = Data.NewValue;
-
-	// Update the HUD
-	AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	if (PC) {
-		UEmbercoreHUDWidget* HUD = PC->GetHUD();
-		if (HUD) {
-			HUD->SetGold(Gold);
-		}
-	}
 }
 
 void AEmbercorePlayerState::CharacterLevelChanged(const FOnAttributeChangeData& Data) {
-	// float CharacterLevel = Data.NewValue;
-	//
-	// // Update the HUD
-	// AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(GetOwner());
-	// if (PC) {
-	// 	UEmbercoreHUDWidget* HUD = PC->GetHUD();
-	// 	if (HUD) {
-	// 		HUD->SetPlayerLevel(CharacterLevel);
-	// 	}
-	// }
+	float CharacterLevel = Data.NewValue;
 }
 
 void AEmbercorePlayerState::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) {

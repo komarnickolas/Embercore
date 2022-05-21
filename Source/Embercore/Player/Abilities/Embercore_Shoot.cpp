@@ -9,7 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Embercore/Abilities/Tasks/EmbercoreAT_PlayMontageAndWaitForEvent.h"
 #include "Embercore/Abilities/Tasks/EmbercoreAT_WaitReceiveDamage.h"
-#include "Embercore/Player/PlayerCharacter.h"
+#include "Embercore/Player/EmbercorePlayer.h"
 #include "Embercore/Weapons/EmbercoreProjectile.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
 
