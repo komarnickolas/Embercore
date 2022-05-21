@@ -11,6 +11,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "EmbercorePlayerState.h"
 #include "Embercore/EmbercoreCharacter.h"
+#include "Embercore/UI/EmbercoreDamageTextWidgetComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -43,7 +44,12 @@ void AEmbercorePlayerController::Tick(float DeltaTime) {
 void AEmbercorePlayerController::ShowDamageNumber_Implementation(float DamageAmount,
                                                                  AEmbercoreCharacter* TargetCharacter) {
 	if (TargetCharacter) {
-		UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), DamageAmount);
+		// UEmbercoreDamageTextWidgetComponent* DamageText = NewObject<UEmbercoreDamageTextWidgetComponent>(
+		// 	TargetCharacter, DamageNumberClass);
+		// DamageText->RegisterComponent();
+		// DamageText->AttachToComponent(TargetCharacter->GetRootComponent(),
+		//                               FAttachmentTransformRules::KeepRelativeTransform);
+		// DamageText->SetDamageText(DamageAmount);
 	}
 }
 

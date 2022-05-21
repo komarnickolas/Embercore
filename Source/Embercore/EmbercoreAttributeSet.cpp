@@ -82,12 +82,6 @@ void UEmbercoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	}
 
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute()) {
-		// Try to extract a hit result
-		FHitResult HitResult;
-		if (Context.GetHitResult()) {
-			HitResult = *Context.GetHitResult();
-		}
-
 		// Store a local copy of the amount of damage done and clear the damage attribute
 		const float LocalDamageDone = GetDamage();
 		SetDamage(0.f);
@@ -110,35 +104,6 @@ void UEmbercoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 			SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
 
 			if (TargetCharacter && WasAlive) {
-				// This is the log statement for damage received. Turned off for live games.
-				//UE_LOG(LogTemp, Log, TEXT("%s() %s Damage Received: %f"), TEXT(__FUNCTION__), *GetOwningActor()->GetName(), LocalDamageDone);
-
-				// Play HitReact animation and sound with a multicast RPC.
-				const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
-
-				if (Hit) {
-					EEmbercoreHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(
-						Data.EffectSpec.GetContext().GetHitResult()->Location);
-					switch (HitDirection) {
-					case EEmbercoreHitReactDirection::Left:
-						TargetCharacter->PlayHitReact(HitDirectionLeftTag, SourceCharacter);
-						break;
-					case EEmbercoreHitReactDirection::Front:
-						TargetCharacter->PlayHitReact(HitDirectionFrontTag, SourceCharacter);
-						break;
-					case EEmbercoreHitReactDirection::Right:
-						TargetCharacter->PlayHitReact(HitDirectionRightTag, SourceCharacter);
-						break;
-					case EEmbercoreHitReactDirection::Back:
-						TargetCharacter->PlayHitReact(HitDirectionBackTag, SourceCharacter);
-						break;
-					}
-				}
-				else {
-					// No hit result. Default to front.
-					TargetCharacter->PlayHitReact(HitDirectionFrontTag, SourceCharacter);
-				}
-
 				// Show damage number for the Source player unless it was self damage
 				if (SourceActor != TargetActor) {
 					AEmbercorePlayerController* PC = Cast<AEmbercorePlayerController>(SourceController);
