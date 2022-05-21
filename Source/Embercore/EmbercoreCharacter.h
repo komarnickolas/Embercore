@@ -72,19 +72,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
 	float GetMaxHealth() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
-	float GetMana() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
-	float GetMaxMana() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
-	float GetStamina() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
-	float GetMaxStamina() const;
-
+	
 	// Gets the Current value of MoveSpeed
 	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
 	float GetMoveSpeed() const;
@@ -156,7 +144,5 @@ protected:
 	*/
 
 	virtual void SetHealth(float Health);
-	virtual void SetMana(float Mana);
-	virtual void SetStamina(float Stamina);
 
 };

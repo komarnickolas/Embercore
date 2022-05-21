@@ -152,38 +152,6 @@ float AEmbercoreCharacter::GetMaxHealth() const {
 	return 0.0f;
 }
 
-float AEmbercoreCharacter::GetMana() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMana();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetMaxMana() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMaxMana();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetStamina() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetStamina();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetMaxStamina() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMaxStamina();
-	}
-
-	return 0.0f;
-}
-
 float AEmbercoreCharacter::GetMoveSpeed() const {
 	if (AttributeSetBase.IsValid()) {
 		return AttributeSetBase->GetMoveSpeed();
@@ -302,17 +270,5 @@ void AEmbercoreCharacter::AddStartupEffects() {
 void AEmbercoreCharacter::SetHealth(float Health) {
 	if (AttributeSetBase.IsValid()) {
 		AttributeSetBase->SetHealth(Health);
-	}
-}
-
-void AEmbercoreCharacter::SetMana(float Mana) {
-	if (AttributeSetBase.IsValid()) {
-		AttributeSetBase->SetMana(Mana);
-	}
-}
-
-void AEmbercoreCharacter::SetStamina(float Stamina) {
-	if (AttributeSetBase.IsValid()) {
-		AttributeSetBase->SetStamina(Stamina);
 	}
 }

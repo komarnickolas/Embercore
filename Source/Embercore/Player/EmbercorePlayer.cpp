@@ -113,8 +113,6 @@ void AEmbercorePlayer::PossessedBy(AController* NewController) {
 
 		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
 		SetHealth(GetMaxHealth());
-		SetMana(GetMaxMana());
-		SetStamina(GetMaxStamina());
 
 		// End respawn specific things
 
@@ -231,7 +229,6 @@ void AEmbercorePlayer::InitializeFloatingStatusBar() {
 
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
-				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
 			}
 		}
 	}
@@ -270,8 +267,6 @@ void AEmbercorePlayer::OnRep_PlayerState() {
 
 		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
 		SetHealth(GetMaxHealth());
-		SetMana(GetMaxMana());
-		SetStamina(GetMaxStamina());
 	}
 }
 

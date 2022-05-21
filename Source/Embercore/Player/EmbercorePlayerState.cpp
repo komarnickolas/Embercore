@@ -58,30 +58,6 @@ float AEmbercorePlayerState::GetHealthRegenRate() const {
 	return AttributeSetBase->GetHealthRegenRate();
 }
 
-float AEmbercorePlayerState::GetMana() const {
-	return AttributeSetBase->GetMana();
-}
-
-float AEmbercorePlayerState::GetMaxMana() const {
-	return AttributeSetBase->GetMaxMana();
-}
-
-float AEmbercorePlayerState::GetManaRegenRate() const {
-	return AttributeSetBase->GetManaRegenRate();
-}
-
-float AEmbercorePlayerState::GetStamina() const {
-	return AttributeSetBase->GetStamina();
-}
-
-float AEmbercorePlayerState::GetMaxStamina() const {
-	return AttributeSetBase->GetMaxStamina();
-}
-
-float AEmbercorePlayerState::GetStaminaRegenRate() const {
-	return AttributeSetBase->GetStaminaRegenRate();
-}
-
 float AEmbercorePlayerState::GetArmor() const {
 	return AttributeSetBase->GetArmor();
 }
@@ -126,27 +102,6 @@ void AEmbercorePlayerState::BeginPlay() {
 		                                       GetGameplayAttributeValueChangeDelegate(
 			                                       AttributeSetBase->GetHealthRegenRateAttribute()).AddUObject(
 			                                       this, &AEmbercorePlayerState::HealthRegenRateChanged);
-		ManaChangedDelegateHandle = AbilitySystemComponent->
-		                            GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetManaAttribute()).
-		                            AddUObject(this, &AEmbercorePlayerState::ManaChanged);
-		MaxManaChangedDelegateHandle = AbilitySystemComponent->
-		                               GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMaxManaAttribute()).
-		                               AddUObject(this, &AEmbercorePlayerState::MaxManaChanged);
-		ManaRegenRateChangedDelegateHandle = AbilitySystemComponent->
-		                                     GetGameplayAttributeValueChangeDelegate(
-			                                     AttributeSetBase->GetManaRegenRateAttribute()).AddUObject(
-			                                     this, &AEmbercorePlayerState::ManaRegenRateChanged);
-		StaminaChangedDelegateHandle = AbilitySystemComponent->
-		                               GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetStaminaAttribute()).
-		                               AddUObject(this, &AEmbercorePlayerState::StaminaChanged);
-		MaxStaminaChangedDelegateHandle = AbilitySystemComponent->
-		                                  GetGameplayAttributeValueChangeDelegate(
-			                                  AttributeSetBase->GetMaxStaminaAttribute()).AddUObject(
-			                                  this, &AEmbercorePlayerState::MaxStaminaChanged);
-		StaminaRegenRateChangedDelegateHandle = AbilitySystemComponent->
-		                                        GetGameplayAttributeValueChangeDelegate(
-			                                        AttributeSetBase->GetStaminaRegenRateAttribute()).AddUObject(
-			                                        this, &AEmbercorePlayerState::StaminaRegenRateChanged);
 		XPChangedDelegateHandle = AbilitySystemComponent->
 		                          GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetXPAttribute()).
 		                          AddUObject(this, &AEmbercorePlayerState::XPChanged);
@@ -196,6 +151,14 @@ void AEmbercorePlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
 
 void AEmbercorePlayerState::HealthRegenRateChanged(const FOnAttributeChangeData& Data) {
 	float HealthRegenRate = Data.NewValue;
+}
+
+void AEmbercorePlayerState::XPChanged(const FOnAttributeChangeData& Data) {
+	float XP = Data.NewValue;
+}
+
+void AEmbercorePlayerState::GoldChanged(const FOnAttributeChangeData& Data) {
+	float Gold = Data.NewValue;
 }
 
 void AEmbercorePlayerState::CharacterLevelChanged(const FOnAttributeChangeData& Data) {

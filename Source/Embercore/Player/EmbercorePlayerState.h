@@ -36,24 +36,6 @@ public:
 	float GetHealthRegenRate() const;
 
 	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetMana() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetMaxMana() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetManaRegenRate() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetStamina() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetMaxStamina() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
-	float GetStaminaRegenRate() const;
-
-	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
 	float GetArmor() const;
 
 	UFUNCTION(BlueprintCallable, Category = "EmbercorePlayerState|Attributes")
@@ -86,12 +68,6 @@ protected:
 	FDelegateHandle HealthChangedDelegateHandle;
 	FDelegateHandle MaxHealthChangedDelegateHandle;
 	FDelegateHandle HealthRegenRateChangedDelegateHandle;
-	FDelegateHandle ManaChangedDelegateHandle;
-	FDelegateHandle MaxManaChangedDelegateHandle;
-	FDelegateHandle ManaRegenRateChangedDelegateHandle;
-	FDelegateHandle StaminaChangedDelegateHandle;
-	FDelegateHandle MaxStaminaChangedDelegateHandle;
-	FDelegateHandle StaminaRegenRateChangedDelegateHandle;
 	FDelegateHandle XPChangedDelegateHandle;
 	FDelegateHandle GoldChangedDelegateHandle;
 	FDelegateHandle CharacterLevelChangedDelegateHandle;
@@ -103,12 +79,6 @@ protected:
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 	virtual void HealthRegenRateChanged(const FOnAttributeChangeData& Data);
-	virtual void ManaChanged(const FOnAttributeChangeData& Data);
-	virtual void MaxManaChanged(const FOnAttributeChangeData& Data);
-	virtual void ManaRegenRateChanged(const FOnAttributeChangeData& Data);
-	virtual void StaminaChanged(const FOnAttributeChangeData& Data);
-	virtual void MaxStaminaChanged(const FOnAttributeChangeData& Data);
-	virtual void StaminaRegenRateChanged(const FOnAttributeChangeData& Data);
 	virtual void XPChanged(const FOnAttributeChangeData& Data);
 	virtual void GoldChanged(const FOnAttributeChangeData& Data);
 	virtual void CharacterLevelChanged(const FOnAttributeChangeData& Data);

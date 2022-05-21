@@ -108,24 +108,6 @@ protected:
 	virtual void OnRep_HealthRegenRate(const FGameplayAttributeData& OldHealthRegenRate);
 
 	UFUNCTION()
-	virtual void OnRep_Mana(const FGameplayAttributeData& OldMana);
-
-	UFUNCTION()
-	virtual void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana);
-
-	UFUNCTION()
-	virtual void OnRep_ManaRegenRate(const FGameplayAttributeData& OldManaRegenRate);
-
-	UFUNCTION()
-	virtual void OnRep_Stamina(const FGameplayAttributeData& OldStamina);
-
-	UFUNCTION()
-	virtual void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
-
-	UFUNCTION()
-	virtual void OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate);
-
-	UFUNCTION()
 	virtual void OnRep_Armor(const FGameplayAttributeData& OldArmor);
 
 	UFUNCTION()
