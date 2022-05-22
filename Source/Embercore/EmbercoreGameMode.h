@@ -23,10 +23,6 @@ public:
 protected:
 	float RespawnDelay;
 
-	TSubclassOf<class AEmbercorePlayer> PlayerClass;
-
-	AActor* EnemySpawnPoint;
-
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapons")

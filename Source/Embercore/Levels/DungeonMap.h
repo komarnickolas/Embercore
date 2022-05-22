@@ -7,7 +7,7 @@
 #include "DungeonMap.generated.h"
 
 USTRUCT(BlueprintType)
-struct EMBERCORE_API FRectInt {
+struct EMBERCORE_API FDungeonRoom {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 X;
@@ -64,10 +64,10 @@ struct EMBERCORE_API FRectInt {
 		       X, Y, Width, Height, GetXCenter(), GetYCenter());
 	}
 
-	FRectInt(): X(0), Y(0), Width(0), Height(0) {
+	FDungeonRoom(): X(0), XMax(0), Y(0), YMax(0), Width(0), Height(0) {
 	}
 
-	FRectInt(int32 InX, int32 InY, int32 InWidth, int32 InHeight) {
+	FDungeonRoom(int32 InX, int32 InY, int32 InWidth, int32 InHeight) {
 		X = InX;
 		Y = InY;
 		Width = InWidth;
@@ -81,9 +81,9 @@ USTRUCT(BlueprintType)
 struct EMBERCORE_API FSubDungeon {
 	GENERATED_BODY()
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRectInt Container;
+	FDungeonRoom Container;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRectInt Room;
+	FDungeonRoom Room;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Parent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -114,7 +114,7 @@ struct EMBERCORE_API FSubDungeon {
 	FSubDungeon(): Parent(-1), Index(0), Depth(0), Left(-1), Right(-1) {
 	}
 
-	FSubDungeon(FRectInt InContainer): Parent(-1), Index(0), Depth(0), Left(-1), Right(-1) {
+	FSubDungeon(FDungeonRoom InContainer): Parent(-1), Index(0), Depth(0), Left(-1), Right(-1) {
 		this->Container = InContainer;
 	}
 };
@@ -127,45 +127,62 @@ class EMBERCORE_API UDungeonMap : public UObject {
 	GENERATED_BODY()
 public:
 	UDungeonMap();
+
 	UFUNCTION(BlueprintCallable)
-	void DrawDebug();
+	void DrawDebug(float Scale);
+
 	UFUNCTION(BlueprintCallable)
-	FVector GetCenterOfRect(FRectInt RectInt);
+	FVector GetCenterOfRect(FDungeonRoom RectInt);
+
 	UFUNCTION(BlueprintCallable)
-	FRectInt GetStartingRoom();
+	FDungeonRoom GetStartingRoom();
+
 	UFUNCTION(BlueprintCallable)
-	FRectInt GetEndingRoom();
-	void DrawDebugContainer(FRectInt Container, FColor Color, float Z);
-	void DrawDebugNode(int32 NodeIndex);
+	FDungeonRoom GetEndingRoom();
+
+	void DrawDebugContainer(FDungeonRoom Container, FColor Color, float Scale, float Z);
+	void DrawDebugNode(int32 NodeIndex, float Scale);
+
 	UFUNCTION(BlueprintCallable)
 	void GenerateMap(FRandomStream InStream);
-	bool SplitHorizontal(FRectInt Container);
-	TArray<FRectInt> SplitDungeonContainer(FRectInt Container);
-	int32 SplitDungeon(int32 iteration, FRectInt Container, int32 ParentIndex);
+
+	bool SplitHorizontal(FDungeonRoom Container);
+	TArray<FDungeonRoom> SplitDungeonContainer(FDungeonRoom Container);
+	int32 SplitDungeon(int32 iteration, FDungeonRoom Container, int32 ParentIndex);
+
 	UFUNCTION(BlueprintCallable)
 	float RandomPosition(float In);
+
 	void GenerateRooms(int32 Index);
+
 	UFUNCTION(BlueprintCallable)
-	FRectInt GetRoomFor(int32 Index);
+	FDungeonRoom GetRoomFor(int32 Index);
+
 	UFUNCTION(BlueprintCallable)
-	FVector GetRandomPointFrom(FRectInt Room);
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector GetRandomPointFrom(FDungeonRoom Room);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	int32 Size;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	int32 Depth;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Room)
 	int32 MinRoomDelta;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Room)
 	int32 MinRoomWidth;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Room)
 	int32 MinRoomHeight;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-	int32 Scale;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
 	UStaticMesh* FloorMesh;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
+	UMaterial* FloorMaterial;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Wall")
 	UStaticMesh* WallMesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Wall")
+	UMaterial* WallMaterial;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	TArray<FSubDungeon> Nodes;
 	UPROPERTY(VisibleAnywhere)
 	FRandomStream Stream;
@@ -179,11 +196,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void IterateNodes(FIterateNodes Functor, int32 Index);
 	UFUNCTION(BlueprintCallable)
-	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FRectInt Rect);
+	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FDungeonRoom Rect);
 	UFUNCTION(BlueprintCallable)
-	void IterateEntireRoom(FIterateRect Iterator, FRectInt Rect);
+	void IterateEntireRoom(FIterateRect Iterator, FDungeonRoom Rect);
 	UFUNCTION(BlueprintCallable)
-	void IterateRoomX(FIterateRect Iterator, FRectInt Rect);
+	void IterateRoomX(FIterateRect Iterator, FDungeonRoom Rect);
 	UFUNCTION(BlueprintCallable)
-	void IterateRoomY(FIterateRect Iterator, FRectInt Rect);
+	void IterateRoomY(FIterateRect Iterator, FDungeonRoom Rect);
 };

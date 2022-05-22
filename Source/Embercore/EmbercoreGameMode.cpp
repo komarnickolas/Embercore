@@ -17,7 +17,8 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	PlayerControllerClass = AEmbercorePlayerController::StaticClass();
 	PlayerStateClass = AEmbercorePlayerState::StaticClass();
 	HUDClass = AEmbercorePlayerHUD::StaticClass();
-	PlayerClass = AEmbercorePlayer::StaticClass();
+	DefaultPawnClass = AEmbercorePlayer::StaticClass();
+	GameStateClass = AEmbercorePlayerState::StaticClass();
 }
 
 FWeaponDataStructure AEmbercoreGameMode::FindWeapon_Implementation(FName WeaponId, bool& Success) {
@@ -37,14 +38,4 @@ FWeaponDataStructure AEmbercoreGameMode::FindWeapon_Implementation(FName WeaponI
 
 void AEmbercoreGameMode::BeginPlay() {
 	Super::BeginPlay();
-
-	// Get the enemy hero spawn point
-	TArray<AActor*> Actors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), Actors);
-	for (AActor* Actor : Actors) {
-		if (Actor->GetName() == FString("EnemyHeroSpawn")) {
-			EnemySpawnPoint = Actor;
-			break;
-		}
-	}
 }
