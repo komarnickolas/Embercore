@@ -3,21 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "Engine/GameInstance.h"
 #include "Levels/DungeonMap.h"
-#include "EmbercoreGameState.generated.h"
+#include "EmbercoreGameInstance.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType)
-class EMBERCORE_API AEmbercoreGameState : public AGameStateBase {
+class EMBERCORE_API UEmbercoreGameInstance : public UGameInstance {
 	GENERATED_BODY()
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FRandomStream Stream;
-	UPROPERTY(VisibleAnywhere, Category=Map)
-	int32 CurrentRoom;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	TSubclassOf<UDungeonMap> MapClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
