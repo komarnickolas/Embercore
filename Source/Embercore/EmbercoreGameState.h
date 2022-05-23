@@ -16,7 +16,7 @@ class EMBERCORE_API AEmbercoreGameState : public AGameStateBase {
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRandomStream Stream;
-	UPROPERTY(VisibleAnywhere, Category=Map)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	int32 CurrentRoom;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	TSubclassOf<UDungeonMap> MapClass;

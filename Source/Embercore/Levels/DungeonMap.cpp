@@ -159,6 +159,12 @@ bool UDungeonMap::IsLeaf(FSubDungeon SubDungeon) {
 	return SubDungeon.IsLeaf();
 }
 
+FVector UDungeonMap::GetMapCenter() {
+	int32 MapX = Size * FloorWidth;
+	int32 MapY = Size * FloorHeight;
+	return FVector(MapX / 2, MapY / 2, 0);
+}
+
 void UDungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
 	Functor.ExecuteIfBound(Nodes[Index], Nodes[Index].IsLeaf());
 	if (Nodes[Index].Left != -1) { IterateNodes(Functor, Nodes[Index].Left); }

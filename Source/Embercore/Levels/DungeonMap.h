@@ -195,6 +195,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShowDebug;
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetMapCenter();
+
 	DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateNodes, FSubDungeon, SubDungeon, bool, IsLeaf);
 
 	DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateRect, float, X, float, Y);
