@@ -3,6 +3,7 @@
 
 #include "DungeonRoom.h"
 
+#include "Components/BoxComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 
 
@@ -14,7 +15,9 @@ ADungeonRoom::ADungeonRoom() {
 	Floor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Floor"));
 	Floor->SetupAttachment(RootComponent);
 	Wall = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Wall"));
-	Wall->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	Wall->SetupAttachment(RootComponent);
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(FName("Box"));
+	BoxComponent->SetupAttachment(RootComponent);
 }
 
 void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float XScale, float YScale, UStaticMesh* FloorMesh,
@@ -24,6 +27,8 @@ void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float XScale, float YScale, U
 	Floor->SetMaterial(0, FloorMaterial);
 	Wall->SetStaticMesh(WallMesh);
 	Wall->SetMaterial(0, WallMaterial);
+	BoxComponent->SetRelativeLocation(FVector((InX * XScale) / 2, (InY * YScale) / 2, 10));
+	BoxComponent->SetBoxExtent(FVector((InX * XScale) / 2, (InY * YScale) / 2, 10));
 	X = InX;
 	Y = InY;
 	Width = X * XScale;

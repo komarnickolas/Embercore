@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "DungeonRoom.generated.h"
 
@@ -41,6 +42,8 @@ public:
 	UInstancedStaticMeshComponent* Floor;
 	UPROPERTY(EditAnywhere)
 	UInstancedStaticMeshComponent* Wall;
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* BoxComponent;
 
 protected:
 	// Called when the game starts or when spawned
