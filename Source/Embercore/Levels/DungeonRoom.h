@@ -46,8 +46,6 @@ public:
 	UInstancedStaticMeshComponent* Floor;
 	UPROPERTY(EditAnywhere)
 	UInstancedStaticMeshComponent* Wall;
-	UPROPERTY(EditAnywhere)
-	UBoxComponent* BoxComponent;
 
 protected:
 	// Called when the game starts or when spawned

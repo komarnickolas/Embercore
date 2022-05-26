@@ -16,8 +16,6 @@ ADungeonRoom::ADungeonRoom() {
 	Floor->SetupAttachment(RootComponent);
 	Wall = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Wall"));
 	Wall->SetupAttachment(RootComponent);
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(FName("Box"));
-	BoxComponent->SetupAttachment(RootComponent);
 }
 
 void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
@@ -33,8 +31,6 @@ void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScal
 	Floor->SetMaterial(0, FloorMaterial);
 	Wall->SetStaticMesh(WallMesh);
 	Wall->SetMaterial(0, WallMaterial);
-	BoxComponent->SetRelativeLocation(FVector((X * XScale) / 2, (Y * YScale) / 2, 10));
-	BoxComponent->SetBoxExtent(FVector((X * XScale) / 2, (Y * YScale) / 2, 10));
 	for (int x = 0; x < X; x++) {
 		Wall->AddInstance(FTransform(FVector(x * XScale, 0, 0)));
 		Wall->AddInstance(FTransform(FVector(x * XScale, Y * YScale, 0)));
