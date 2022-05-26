@@ -7,9 +7,9 @@
 #include "Levels/DungeonMap.h"
 #include "EmbercoreGameState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartRoom);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStartRoom, ADungeonRoom*, Room);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCompleteRoom);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCompleteRoom, ADungeonRoom*, Room);
 
 /**
  * 
@@ -25,8 +25,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRandomStream Stream;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 CurrentRoom;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ADungeonRoom* CurrentRoomActor;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	TSubclassOf<UDungeonMap> MapClass;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)

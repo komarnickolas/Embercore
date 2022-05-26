@@ -25,6 +25,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Y;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 XScale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 YScale;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Width;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Height;

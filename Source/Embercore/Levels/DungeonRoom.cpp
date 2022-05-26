@@ -20,19 +20,21 @@ ADungeonRoom::ADungeonRoom() {
 	BoxComponent->SetupAttachment(RootComponent);
 }
 
-void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float XScale, float YScale, UStaticMesh* FloorMesh,
+void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
                              UMaterial* FloorMaterial,
                              UStaticMesh* WallMesh, UMaterial* WallMaterial) {
+	X = InX;
+	Y = InY;
+	XScale = InXScale;
+	YScale = InYScale;
+	Width = X * XScale;
+	Height = Y * YScale;
 	Floor->SetStaticMesh(FloorMesh);
 	Floor->SetMaterial(0, FloorMaterial);
 	Wall->SetStaticMesh(WallMesh);
 	Wall->SetMaterial(0, WallMaterial);
-	BoxComponent->SetRelativeLocation(FVector((InX * XScale) / 2, (InY * YScale) / 2, 10));
-	BoxComponent->SetBoxExtent(FVector((InX * XScale) / 2, (InY * YScale) / 2, 10));
-	X = InX;
-	Y = InY;
-	Width = X * XScale;
-	Height = Y * YScale;
+	BoxComponent->SetRelativeLocation(FVector((X * XScale) / 2, (Y * YScale) / 2, 10));
+	BoxComponent->SetBoxExtent(FVector((X * XScale) / 2, (Y * YScale) / 2, 10));
 	for (int x = 0; x < X; x++) {
 		Wall->AddInstance(FTransform(FVector(x * XScale, 0, 0)));
 		Wall->AddInstance(FTransform(FVector(x * XScale, Y * YScale, 0)));
