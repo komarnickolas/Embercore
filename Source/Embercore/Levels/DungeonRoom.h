@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "DungeonRoom.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRoomBuilt);
 
 UCLASS(BlueprintType)
 class EMBERCORE_API ADungeonRoom : public AActor {
@@ -20,7 +21,11 @@ public:
 	               UStaticMesh*
 	               WallMesh, UMaterial* WallMaterial);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintAssignable, Category=Events)
+	FRoomBuilt OnRoomBuilt;
+
+	UPROPERTY
+	(EditAnywhere, BlueprintReadWrite)
 	int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Y;

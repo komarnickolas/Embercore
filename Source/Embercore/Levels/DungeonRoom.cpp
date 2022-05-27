@@ -50,6 +50,7 @@ void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScal
 		Wall->AddInstance(TransformTop);
 		Wall->AddInstance(TransformBottom);
 	}
+	OnRoomBuilt.Broadcast();
 }
 
 // Called when the game starts or when spawned
