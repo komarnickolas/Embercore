@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
+#include "Components/ProgressBar.h"
 #include "InteractionWidget.generated.h"
 
 /**

@@ -13,36 +13,30 @@ UInteractableComponent::UInteractableComponent() {
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	bHiddenInGame = true;
-
-	// ...
 }
 
 void UInteractableComponent::ToggleInput(APlayerController* Controller, bool InToggle) {
-	this->Active = InToggle;
-	if (Active) {
-		BindToInput("Interact", true);
-		GetOwner()->EnableInput(Controller);
-		SetHiddenInGame(false, true);
-	}
-	else {
-		BindToInput("Interact", false);
-		GetOwner()->DisableInput(Controller);
-		SetHiddenInGame(true, true);
-	}
-	StopTimer();
+	OnToggleInputEvent.Broadcast(InToggle);
+	ToggleOwnerInput(Controller, InToggle);
+	BindToInput(InToggle);
+	SetHiddenInGame(!InToggle, true);
 }
 
-void UInteractableComponent::BindToInput(FName ActionName, bool Enable) {
+void UInteractableComponent::ToggleOwnerInput(APlayerController* Controller, bool Enable) {
+	Enable ? GetOwner()->EnableInput(Controller) : GetOwner()->DisableInput(Controller);
+}
+
+void UInteractableComponent::BindToInput(bool Enable) {
 	if (!IsValid(GetOwner()->InputComponent)) { return; }
 	if (Enable) {
-		GetOwner()->InputComponent->BindAction(ActionName, IE_Pressed, this,
+		GetOwner()->InputComponent->BindAction("Interact", IE_Pressed, this,
 		                                       &UInteractableComponent::OnInteractPressed);
-		GetOwner()->InputComponent->BindAction(ActionName, IE_Released, this,
+		GetOwner()->InputComponent->BindAction("Interact", IE_Released, this,
 		                                       &UInteractableComponent::OnInteractReleased);
 	}
 	else {
-		GetOwner()->InputComponent->RemoveActionBinding(ActionName, IE_Pressed);
-		GetOwner()->InputComponent->RemoveActionBinding(ActionName, IE_Released);
+		GetOwner()->InputComponent->RemoveActionBinding("Interact", IE_Pressed);
+		GetOwner()->InputComponent->RemoveActionBinding("Interact", IE_Released);
 	}
 }
 
@@ -52,20 +46,21 @@ void UInteractableComponent::BeginPlay() {
 }
 
 void UInteractableComponent::StartTimer() {
+	GetWorld()->GetTimerManager().ClearTimer(InteractTimer);
 	GetWorld()->GetTimerManager().SetTimer(InteractTimer, this, &UInteractableComponent::UpdateTimer, MaxHoldTime);
+	OnStartTimerEvent.Broadcast();
 }
 
 void UInteractableComponent::StopTimer() {
 	GetWorld()->GetTimerManager().ClearTimer(InteractTimer);
+	GetWorld()->GetTimerManager().ClearTimer(DelayInteractionTimerHandle);
 	UInteractionWidget* InteractionWidget = Cast<UInteractionWidget>(GetWidget());
-	if (IsValid(InteractionWidget)) {
-		InteractionWidget->Reset();
-	}
+	if (IsValid(InteractionWidget)) { InteractionWidget->Reset(); }
+	OnStopTimerEvent.Broadcast();
 }
 
 void UInteractableComponent::UpdateTimer() {
-	GetWorld()->GetTimerManager().ClearTimer(UpdateTimerHandle);
-	if (IsHeld) {
+	if (this->IsHeld) {
 		float TimeHeld = GetWorld()->GetTimerManager().GetTimerElapsed(InteractTimer);
 		Cast<UInteractionWidget>(GetWidget())->SetPercent(TimeHeld, MaxHoldTime);
 		GetWorld()->GetTimerManager().SetTimer(UpdateTimerHandle, this, &UInteractableComponent::UpdateTimer, 0.1f);
@@ -73,6 +68,7 @@ void UInteractableComponent::UpdateTimer() {
 	else {
 		StopTimer();
 	}
+	OnUpdateTimerEvent.Broadcast(this->IsHeld);
 }
 
 void UInteractableComponent::OnInteractPressed() {
@@ -89,12 +85,13 @@ void UInteractableComponent::DelayInteraction() {
 }
 
 void UInteractableComponent::TriggerInteract() {
+	this->IsHeld = false;
+	StopTimer();
 	OnInteractEvent.Broadcast();
 }
 
 void UInteractableComponent::OnInteractReleased() {
 	this->IsHeld = false;
-	GetWorld()->GetTimerManager().ClearTimer(DelayInteractionTimerHandle);
 	StopTimer();
 }
 

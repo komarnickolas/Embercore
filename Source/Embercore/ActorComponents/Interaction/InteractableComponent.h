@@ -9,6 +9,14 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteract);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToggleInput, bool, InToggle);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartTimer);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStopTimer);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateTimer, bool, IsHeld);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class EMBERCORE_API UInteractableComponent : public UWidgetComponent {
 	GENERATED_BODY()
@@ -18,10 +26,19 @@ public:
 	UInteractableComponent();
 	UPROPERTY(Category=EventDispatchers, BlueprintAssignable)
 	FOnInteract OnInteractEvent;
+	UPROPERTY(Category=EventDispatchers, BlueprintAssignable)
+	FOnToggleInput OnToggleInputEvent;
+	UPROPERTY(Category=EventDispatchers, BlueprintAssignable)
+	FStartTimer OnStartTimerEvent;
+	UPROPERTY(Category=EventDispatchers, BlueprintAssignable)
+	FStopTimer OnStopTimerEvent;
+	UPROPERTY(Category=EventDispatchers, BlueprintAssignable)
+	FUpdateTimer OnUpdateTimerEvent;
 	UFUNCTION(BlueprintCallable)
 	void ToggleInput(APlayerController* Controller, bool InToggle);
+	void ToggleOwnerInput(APlayerController* Controller, bool Enable);
 	UFUNCTION(BlueprintCallable)
-	void BindToInput(FName ActionName, bool Enable);
+	void BindToInput(bool Enable);
 	UFUNCTION(BlueprintCallable)
 	void StartTimer();
 	UFUNCTION(BlueprintCallable)

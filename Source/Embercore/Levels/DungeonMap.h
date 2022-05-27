@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DungeonRoom.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 #include "UObject/Object.h"
 #include "DungeonMap.generated.h"
 
@@ -158,6 +159,18 @@ public:
 	FDungeonContainer GetRoomFor(int32 Index);
 
 	UFUNCTION(BlueprintCallable)
+	FVector SpawnVectorFor(FDungeonContainer Room, float InZ);
+
+	UFUNCTION(BlueprintCallable)
+	ADungeonRoom* SpawnRoom(UClass* InClass, FDungeonContainer Room);
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnNode(UClass* InClass, int32 Index);
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnMap(UClass* InClass);
+
+	UFUNCTION(BlueprintCallable)
 	FVector GetRandomPointFrom(FDungeonContainer Room);
 
 	UFUNCTION(BlueprintCallable)
@@ -200,10 +213,14 @@ public:
 
 	DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateNodes, FSubDungeon, SubDungeon, bool, IsLeaf);
 
+	DECLARE_DYNAMIC_DELEGATE_OneParam(FIterateLeafs, FSubDungeon, SubDungeon);
+
 	DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateRect, float, X, float, Y);
 
 	UFUNCTION(BlueprintCallable)
 	void IterateNodes(FIterateNodes Functor, int32 Index);
+	UFUNCTION(BlueprintCallable)
+	void IterateLeafs(FIterateLeafs Functor, int32 Index);
 	UFUNCTION(BlueprintCallable)
 	void IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator, FDungeonContainer Rect);
 	UFUNCTION(BlueprintCallable)

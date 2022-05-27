@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -18,9 +19,9 @@ ADungeonRoom::ADungeonRoom() {
 	Wall->SetupAttachment(RootComponent);
 }
 
-void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
-                             UMaterial* FloorMaterial,
-                             UStaticMesh* WallMesh, UMaterial* WallMaterial) {
+void ADungeonRoom::SetupRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
+                             UMaterial* FloorMaterial, UStaticMesh* WallMesh,
+                             UMaterial* WallMaterial) {
 	X = InX;
 	Y = InY;
 	XScale = InXScale;
@@ -31,6 +32,37 @@ void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScal
 	Floor->SetMaterial(0, FloorMaterial);
 	Wall->SetStaticMesh(WallMesh);
 	Wall->SetMaterial(0, WallMaterial);
+}
+
+FVector ADungeonRoom::GetRandomPoint() {
+	return UKismetMathLibrary::RandomPointInBoundingBox(GetCenter(), GetHalfSize());
+}
+
+FVector ADungeonRoom::GetHalfSize() {
+	return FVector(Width / 2, Height / 2, 0);
+}
+
+FVector ADungeonRoom::GetCenter() {
+	FVector Origin = GetActorLocation();
+	Origin.X = Origin.X + (Width / 2);
+	Origin.Y = Origin.Y + (Height / 2);
+	return Origin;
+}
+
+// Called when the game starts or when spawned
+void ADungeonRoom::BeginPlay() {
+	Super::BeginPlay();
+	NavMesh = GetWorld()->SpawnActor<ANavMeshBoundsVolume>();
+	NavMesh->GetRootComponent()->SetMobility(EComponentMobility::Movable);
+	NavMesh->SetActorLocation(GetCenter());
+	NavMesh->SetActorScale3D(GetHalfSize());
+	NavMesh->GetRootComponent()->UpdateBounds();
+	NavMesh->GetRootComponent()->SetMobility(EComponentMobility::Static);
+}
+
+void ADungeonRoom::Fill() {
+	Width = X * XScale;
+	Height = Y * YScale;
 	for (int x = 0; x < X; x++) {
 		Wall->AddInstance(FTransform(FVector(x * XScale, 0, 0)));
 		Wall->AddInstance(FTransform(FVector(x * XScale, Y * YScale, 0)));
@@ -50,13 +82,6 @@ void ADungeonRoom::BuildRoom(int32 InX, int32 InY, float InXScale, float InYScal
 		Wall->AddInstance(TransformTop);
 		Wall->AddInstance(TransformBottom);
 	}
-	OnRoomBuilt.Broadcast();
-}
-
-// Called when the game starts or when spawned
-void ADungeonRoom::BeginPlay() {
-	Super::BeginPlay();
-
 }
 
 // Called every frame

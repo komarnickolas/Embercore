@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 #include "DungeonRoom.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRoomBuilt);
 
 UCLASS(BlueprintType)
 class EMBERCORE_API ADungeonRoom : public AActor {
@@ -17,15 +16,17 @@ public:
 	ADungeonRoom();
 
 	UFUNCTION(BlueprintCallable)
-	void BuildRoom(int32 InX, int32 InY, float XScale, float YScale, UStaticMesh* FloorMesh, UMaterial* FloorMaterial,
-	               UStaticMesh*
+	void SetupRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
+	               UMaterial* FloorMaterial, UStaticMesh*
 	               WallMesh, UMaterial* WallMaterial);
 
-	UPROPERTY(BlueprintAssignable, Category=Events)
-	FRoomBuilt OnRoomBuilt;
-
-	UPROPERTY
-	(EditAnywhere, BlueprintReadWrite)
+	UFUNCTION(BlueprintCallable)
+	FVector GetRandomPoint();
+	UFUNCTION(BlueprintCallable)
+	FVector GetHalfSize();
+	UFUNCTION(BlueprintCallable)
+	FVector GetCenter();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Y;
@@ -48,9 +49,14 @@ public:
 	bool Active = false;
 
 	UPROPERTY(EditAnywhere)
+	ANavMeshBoundsVolume* NavMesh;
+	UPROPERTY(EditAnywhere)
 	UInstancedStaticMeshComponent* Floor;
 	UPROPERTY(EditAnywhere)
 	UInstancedStaticMeshComponent* Wall;
+
+	UFUNCTION(BlueprintCallable)
+	void Fill();
 
 protected:
 	// Called when the game starts or when spawned

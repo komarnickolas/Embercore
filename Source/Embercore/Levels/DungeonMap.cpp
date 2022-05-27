@@ -4,6 +4,8 @@
 #include "DungeonMap.h"
 
 #include "MathUtil.h"
+#include "Kismet/GameplayStatics.h"
+#include "NavMesh/NavMeshBoundsVolume.h"
 
 // FVector4(X=X,Y=Y,Z=Height,W=Width)
 
@@ -150,6 +152,34 @@ FDungeonContainer UDungeonMap::GetRoomFor(int32 Index) {
 	return FDungeonContainer(-1, -1, 0, 0);
 }
 
+FVector UDungeonMap::SpawnVectorFor(FDungeonContainer Room, float InZ) {
+	return FVector(Room.X * FloorWidth, Room.Y * FloorHeight, InZ);
+}
+
+ADungeonRoom* UDungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
+	FTransform SpawnTransform(FRotator(0, 0, 0), SpawnVectorFor(Room, 0));
+	ADungeonRoom* DeferredRoom = Cast<ADungeonRoom>(
+		UGameplayStatics::BeginDeferredActorSpawnFromClass(this, InClass, SpawnTransform));
+	if (DeferredRoom != nullptr) {
+		DeferredRoom->SetupRoom(Room.Width, Room.Height,
+		                        FloorWidth, FloorHeight,
+		                        FloorMesh, FloorMaterial,
+		                        WallMesh, WallMaterial);
+		UGameplayStatics::FinishSpawningActor(DeferredRoom, SpawnTransform);
+	}
+	return DeferredRoom;
+}
+
+void UDungeonMap::SpawnNode(UClass* InClass, int32 Index) {
+	if (Nodes[Index].IsLeaf()) { SpawnRoom(InClass, Nodes[Index].Room); }
+	if (Nodes[Index].Left != -1) { SpawnNode(InClass, Nodes[Index].Left); }
+	if (Nodes[Index].Right != -1) { SpawnNode(InClass, Nodes[Index].Right); }
+}
+
+void UDungeonMap::SpawnMap(UClass* InClass) {
+	SpawnNode(InClass, 0);
+}
+
 FVector UDungeonMap::GetRandomPointFrom(FDungeonContainer Room) {
 	return FVector(Stream.RandRange(Room.X + 1, Room.GetXMax() - 1),
 	               Stream.RandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
@@ -169,6 +199,14 @@ void UDungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
 	Functor.ExecuteIfBound(Nodes[Index], Nodes[Index].IsLeaf());
 	if (Nodes[Index].Left != -1) { IterateNodes(Functor, Nodes[Index].Left); }
 	if (Nodes[Index].Right != -1) { IterateNodes(Functor, Nodes[Index].Right); }
+}
+
+void UDungeonMap::IterateLeafs(FIterateLeafs Functor, int32 Index) {
+	if (Nodes[Index].IsLeaf()) {
+		Functor.ExecuteIfBound(Nodes[Index]);
+	}
+	if (Nodes[Index].Left != -1) { IterateLeafs(Functor, Nodes[Index].Left); }
+	if (Nodes[Index].Right != -1) { IterateLeafs(Functor, Nodes[Index].Right); }
 }
 
 void UDungeonMap::IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator,
