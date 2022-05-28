@@ -29,8 +29,4 @@ public:
 	int32 CurrentRoom;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ADungeonRoom* CurrentRoomActor;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
-	TSubclassOf<UDungeonMap> MapClass;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
-	UDungeonMap* Map;
 };

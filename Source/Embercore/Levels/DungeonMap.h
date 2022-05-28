@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DungeonRoom.h"
-#include "NavMesh/NavMeshBoundsVolume.h"
-#include "UObject/Object.h"
 #include "DungeonMap.generated.h"
 
 USTRUCT(BlueprintType)
@@ -122,11 +120,14 @@ struct EMBERCORE_API FSubDungeon {
 /**
  * 
  */
-UCLASS(BlueprintType, Blueprintable)
-class EMBERCORE_API UDungeonMap : public UObject {
+UCLASS(BlueprintType)
+class EMBERCORE_API ADungeonMap : public AActor {
 	GENERATED_BODY()
 public:
-	UDungeonMap();
+	ADungeonMap();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UInstancedStaticMeshComponent* InstancedMeshComponent;
 
 	UFUNCTION(BlueprintCallable)
 	void DrawDebug();

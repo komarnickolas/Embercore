@@ -10,6 +10,7 @@ public class Embercore : ModuleRules {
 			"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule",
 			"Niagara", "Slate", "SlateCore"
 		});
-		PrivateDependencyModuleNames.AddRange(new string[] {"GameplayTasks", "GameplayTags", "GameplayAbilities"});
+		PrivateDependencyModuleNames.AddRange(new string[]
+			{"GameplayTasks", "GameplayTags", "GameplayAbilities", "GeometryFramework"});
 	}
 }

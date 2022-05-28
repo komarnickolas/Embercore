@@ -13,9 +13,4 @@
 UCLASS(BlueprintType)
 class EMBERCORE_API UEmbercoreGameInstance : public UGameInstance {
 	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
-	TSubclassOf<UDungeonMap> MapClass;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
-	UDungeonMap* Map;
 };

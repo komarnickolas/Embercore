@@ -52,12 +52,6 @@ FVector ADungeonRoom::GetCenter() {
 // Called when the game starts or when spawned
 void ADungeonRoom::BeginPlay() {
 	Super::BeginPlay();
-	NavMesh = GetWorld()->SpawnActor<ANavMeshBoundsVolume>();
-	NavMesh->GetRootComponent()->SetMobility(EComponentMobility::Movable);
-	NavMesh->SetActorLocation(GetCenter());
-	NavMesh->SetActorScale3D(GetHalfSize());
-	NavMesh->GetRootComponent()->UpdateBounds();
-	NavMesh->GetRootComponent()->SetMobility(EComponentMobility::Static);
 }
 
 void ADungeonRoom::Fill() {

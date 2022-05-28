@@ -4,40 +4,43 @@
 #include "DungeonMap.h"
 
 #include "MathUtil.h"
+#include "AI/NavigationSystemBase.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavMesh/NavMeshBoundsVolume.h"
 
 // FVector4(X=X,Y=Y,Z=Height,W=Width)
 
-UDungeonMap::UDungeonMap() {
+ADungeonMap::ADungeonMap() {
+	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("Root")));
+	InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("InstancedMeshComponent"));
+	InstancedMeshComponent->SetupAttachment(RootComponent);
 }
 
-void UDungeonMap::DrawDebug() {
-	if (!ShowDebug) { return; }
-	if (!IsValid(this)) { return; }
-	DrawDebugNode(0);
+void ADungeonMap::DrawDebug() {
+	if (ShowDebug) { DrawDebugNode(0); }
 }
 
-FVector UDungeonMap::GetCenterOfRect(FDungeonContainer RectInt) {
+FVector ADungeonMap::GetCenterOfRect(FDungeonContainer RectInt) {
 	return RectInt.GetCenter();
 }
 
-FDungeonContainer UDungeonMap::GetStartingRoom() {
+FDungeonContainer ADungeonMap::GetStartingRoom() {
 	return FDungeonContainer(0, -5, 3, 2);
 }
 
-FDungeonContainer UDungeonMap::GetEndingRoom() {
+FDungeonContainer ADungeonMap::GetEndingRoom() {
 	return FDungeonContainer(0, -1, 2, 3);
 }
 
-void UDungeonMap::DrawDebugContainer(FDungeonContainer Container, FColor Color, float Z = 0) {
+void ADungeonMap::DrawDebugContainer(FDungeonContainer Container, FColor Color, float Z = 0) {
 	DrawDebugLine(GetWorld(), Container.ToVector(Z) * FloorWidth, Container.ToXMaxVector(Z) * FloorWidth, Color);
 	DrawDebugLine(GetWorld(), Container.ToXMaxVector(Z) * FloorHeight, Container.ToMaxVector(Z) * FloorHeight, Color);
 	DrawDebugLine(GetWorld(), Container.ToYMaxVector(Z) * FloorWidth, Container.ToMaxVector(Z) * FloorWidth, Color);
 	DrawDebugLine(GetWorld(), Container.ToVector(Z) * FloorHeight, Container.ToYMaxVector(Z) * FloorHeight, Color);
 }
 
-void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
+void ADungeonMap::DrawDebugNode(int32 NodeIndex) {
 	FSubDungeon& Node = Nodes[NodeIndex];
 	DrawDebugContainer(Node.Container, FColor::Green, -2);
 	if (Node.IsLeaf()) {
@@ -51,14 +54,15 @@ void UDungeonMap::DrawDebugNode(int32 NodeIndex) {
 	}
 }
 
-void UDungeonMap::GenerateMap(FRandomStream InStream) {
+void ADungeonMap::GenerateMap(FRandomStream InStream) {
 	this->Stream = InStream;
+	this->Nodes.Empty();
 	SplitDungeon(Depth, FDungeonContainer(0, 0, Size, Size), -1);
 	GenerateRooms(0);
 	UE_LOG(LogTemp, Warning, TEXT("Dungeon Generated"));
 }
 
-bool UDungeonMap::SplitHorizontal(FDungeonContainer Container) {
+bool ADungeonMap::SplitHorizontal(FDungeonContainer Container) {
 	if (Container.Width / Container.Height >= 1.25) {
 		return false;
 	}
@@ -68,7 +72,7 @@ bool UDungeonMap::SplitHorizontal(FDungeonContainer Container) {
 	return Stream.FRandRange(0, 1) > 0.5f;
 }
 
-TArray<FDungeonContainer> UDungeonMap::SplitDungeonContainer(FDungeonContainer Container) {
+TArray<FDungeonContainer> ADungeonMap::SplitDungeonContainer(FDungeonContainer Container) {
 	TArray<FDungeonContainer> Array;
 	FDungeonContainer C1, C2;
 	if (SplitHorizontal(Container)) {
@@ -84,7 +88,7 @@ TArray<FDungeonContainer> UDungeonMap::SplitDungeonContainer(FDungeonContainer C
 	return Array;
 }
 
-int32 UDungeonMap::SplitDungeon(int32 iteration, FDungeonContainer Container, int32 ParentIndex) {
+int32 ADungeonMap::SplitDungeon(int32 iteration, FDungeonContainer Container, int32 ParentIndex) {
 	const int32 Index = Nodes.Add(FSubDungeon(Container));
 	Nodes[Index].Index = Index;
 	Nodes[Index].Parent = ParentIndex;
@@ -105,11 +109,11 @@ int32 UDungeonMap::SplitDungeon(int32 iteration, FDungeonContainer Container, in
 	return Index;
 }
 
-float UDungeonMap::RandomPosition(float In) {
+float ADungeonMap::RandomPosition(float In) {
 	return Stream.FRandRange(In * 0.3f, In * 0.5f);
 }
 
-void UDungeonMap::GenerateRooms(int32 Index) {
+void ADungeonMap::GenerateRooms(int32 Index) {
 	FSubDungeon& Node = Nodes[Index];
 	if (Node.IsLeaf()) {
 		float RandomX = Stream.FRandRange(MinRoomDelta, Node.Container.Width / 4);
@@ -136,7 +140,7 @@ void UDungeonMap::GenerateRooms(int32 Index) {
 	if (Node.Right != -1) { GenerateRooms(Node.Right); }
 }
 
-FDungeonContainer UDungeonMap::GetRoomFor(int32 Index) {
+FDungeonContainer ADungeonMap::GetRoomFor(int32 Index) {
 	if (Nodes[Index].IsLeaf()) {
 		return Nodes[Index].Room;
 	}
@@ -152,11 +156,11 @@ FDungeonContainer UDungeonMap::GetRoomFor(int32 Index) {
 	return FDungeonContainer(-1, -1, 0, 0);
 }
 
-FVector UDungeonMap::SpawnVectorFor(FDungeonContainer Room, float InZ) {
+FVector ADungeonMap::SpawnVectorFor(FDungeonContainer Room, float InZ) {
 	return FVector(Room.X * FloorWidth, Room.Y * FloorHeight, InZ);
 }
 
-ADungeonRoom* UDungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
+ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 	FTransform SpawnTransform(FRotator(0, 0, 0), SpawnVectorFor(Room, 0));
 	ADungeonRoom* DeferredRoom = Cast<ADungeonRoom>(
 		UGameplayStatics::BeginDeferredActorSpawnFromClass(this, InClass, SpawnTransform));
@@ -170,38 +174,38 @@ ADungeonRoom* UDungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 	return DeferredRoom;
 }
 
-void UDungeonMap::SpawnNode(UClass* InClass, int32 Index) {
+void ADungeonMap::SpawnNode(UClass* InClass, int32 Index) {
 	if (Nodes[Index].IsLeaf()) { SpawnRoom(InClass, Nodes[Index].Room); }
 	if (Nodes[Index].Left != -1) { SpawnNode(InClass, Nodes[Index].Left); }
 	if (Nodes[Index].Right != -1) { SpawnNode(InClass, Nodes[Index].Right); }
 }
 
-void UDungeonMap::SpawnMap(UClass* InClass) {
+void ADungeonMap::SpawnMap(UClass* InClass) {
 	SpawnNode(InClass, 0);
 }
 
-FVector UDungeonMap::GetRandomPointFrom(FDungeonContainer Room) {
+FVector ADungeonMap::GetRandomPointFrom(FDungeonContainer Room) {
 	return FVector(Stream.RandRange(Room.X + 1, Room.GetXMax() - 1),
 	               Stream.RandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
 }
 
-bool UDungeonMap::IsLeaf(FSubDungeon SubDungeon) {
+bool ADungeonMap::IsLeaf(FSubDungeon SubDungeon) {
 	return SubDungeon.IsLeaf();
 }
 
-FVector UDungeonMap::GetMapCenter() {
+FVector ADungeonMap::GetMapCenter() {
 	int32 MapX = Size * FloorWidth;
 	int32 MapY = Size * FloorHeight;
 	return FVector(MapX / 2, MapY / 2, 0);
 }
 
-void UDungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
+void ADungeonMap::IterateNodes(FIterateNodes Functor, int32 Index) {
 	Functor.ExecuteIfBound(Nodes[Index], Nodes[Index].IsLeaf());
 	if (Nodes[Index].Left != -1) { IterateNodes(Functor, Nodes[Index].Left); }
 	if (Nodes[Index].Right != -1) { IterateNodes(Functor, Nodes[Index].Right); }
 }
 
-void UDungeonMap::IterateLeafs(FIterateLeafs Functor, int32 Index) {
+void ADungeonMap::IterateLeafs(FIterateLeafs Functor, int32 Index) {
 	if (Nodes[Index].IsLeaf()) {
 		Functor.ExecuteIfBound(Nodes[Index]);
 	}
@@ -209,14 +213,14 @@ void UDungeonMap::IterateLeafs(FIterateLeafs Functor, int32 Index) {
 	if (Nodes[Index].Right != -1) { IterateLeafs(Functor, Nodes[Index].Right); }
 }
 
-void UDungeonMap::IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator,
+void ADungeonMap::IterateRoom(FIterateRect Iterator, FIterateRect XIterator, FIterateRect YIterator,
                               FDungeonContainer Rect) {
 	IterateEntireRoom(Iterator, Rect);
 	IterateRoomX(XIterator, Rect);
 	IterateRoomY(YIterator, Rect);
 }
 
-void UDungeonMap::IterateEntireRoom(FIterateRect Iterator, FDungeonContainer Rect) {
+void ADungeonMap::IterateEntireRoom(FIterateRect Iterator, FDungeonContainer Rect) {
 	for (int32 x = Rect.X; x < Rect.GetXMax(); x++) {
 		for (int32 y = Rect.Y; y < Rect.GetYMax(); y++) {
 			Iterator.ExecuteIfBound(x, y);
@@ -224,7 +228,7 @@ void UDungeonMap::IterateEntireRoom(FIterateRect Iterator, FDungeonContainer Rec
 	}
 }
 
-void UDungeonMap::IterateRoomX(FIterateRect Iterator, FDungeonContainer Rect) {
+void ADungeonMap::IterateRoomX(FIterateRect Iterator, FDungeonContainer Rect) {
 	for (int32 x = Rect.X; x < Rect.GetXMax(); x++) {
 		Iterator.ExecuteIfBound(x, Rect.Y);
 	}
@@ -233,7 +237,7 @@ void UDungeonMap::IterateRoomX(FIterateRect Iterator, FDungeonContainer Rect) {
 	}
 }
 
-void UDungeonMap::IterateRoomY(FIterateRect Iterator, FDungeonContainer Rect) {
+void ADungeonMap::IterateRoomY(FIterateRect Iterator, FDungeonContainer Rect) {
 	for (int32 y = Rect.Y; y < Rect.GetYMax(); y++) {
 		Iterator.ExecuteIfBound(Rect.X, y);
 	}
