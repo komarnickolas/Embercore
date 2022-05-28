@@ -184,7 +184,10 @@ ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 }
 
 void ADungeonMap::SpawnNode(UClass* InClass, int32 Index) {
-	if (Nodes[Index].IsLeaf()) { SpawnRoom(InClass, Nodes[Index].Room); }
+	if (Nodes[Index].IsLeaf()) {
+		ADungeonRoom* Room = SpawnRoom(InClass, Nodes[Index].Room);
+		if (Room) { Room->Index = Index; }
+	}
 	if (Nodes[Index].Left != -1) { SpawnNode(InClass, Nodes[Index].Left); }
 	if (Nodes[Index].Right != -1) { SpawnNode(InClass, Nodes[Index].Right); }
 }
