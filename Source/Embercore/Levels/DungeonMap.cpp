@@ -49,9 +49,9 @@ void ADungeonMap::DrawDebugContainer(FDungeonContainer Container, FColor Color, 
 
 void ADungeonMap::DrawDebugNode(int32 NodeIndex) {
 	FSubDungeon& Node = Nodes[NodeIndex];
-	DrawDebugContainer(Node.Container, FColor::Green, -2);
+	DrawDebugContainer(Node.Container, FColor::Green, 100);
 	if (Node.IsLeaf()) {
-		DrawDebugContainer(Node.Room, FColor::Red, -1);
+		DrawDebugContainer(Node.Room, FColor::Red, 200);
 	}
 	if (Node.Left != -1) {
 		DrawDebugNode(Node.Left);
@@ -168,6 +168,7 @@ FVector ADungeonMap::SpawnVectorFor(FDungeonContainer Room, float InZ) {
 }
 
 ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
+	if (Room.X == 0 || Room.Y == 0) { return nullptr; }
 	FTransform SpawnTransform(FRotator(0, 0, 0), SpawnVectorFor(Room, 0));
 	ADungeonRoom* DeferredRoom = Cast<ADungeonRoom>(
 		UGameplayStatics::BeginDeferredActorSpawnFromClass(this, InClass, SpawnTransform));
@@ -176,6 +177,7 @@ ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 		                        FloorWidth, FloorHeight,
 		                        FloorMesh, FloorMaterial,
 		                        WallMesh, WallMaterial);
+		DeferredRoom->SetOwner(this);
 		UGameplayStatics::FinishSpawningActor(DeferredRoom, SpawnTransform);
 	}
 	return DeferredRoom;

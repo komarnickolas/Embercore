@@ -29,4 +29,6 @@ public:
 	int32 CurrentRoom;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ADungeonRoom* CurrentRoomActor;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	ADungeonMap* CurrentMap;
 };
