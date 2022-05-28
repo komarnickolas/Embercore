@@ -126,8 +126,11 @@ class EMBERCORE_API ADungeonMap : public AActor {
 public:
 	ADungeonMap();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UInstancedStaticMeshComponent* InstancedMeshComponent;
+	UStaticMeshComponent* StaticMeshComponent;
 
 	UFUNCTION(BlueprintCallable)
 	void DrawDebug();
@@ -188,18 +191,18 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Room)
 	int32 MinRoomHeight;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
 	UStaticMesh* FloorMesh;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
 	UMaterial* FloorMaterial;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
 	float FloorWidth;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Floor")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
 	float FloorHeight;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Wall")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Wall")
 	UStaticMesh* WallMesh;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Room|Wall")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Wall")
 	UMaterial* WallMaterial;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
@@ -230,4 +233,5 @@ public:
 	void IterateRoomX(FIterateRect Iterator, FDungeonContainer Rect);
 	UFUNCTION(BlueprintCallable)
 	void IterateRoomY(FIterateRect Iterator, FDungeonContainer Rect);
+
 };

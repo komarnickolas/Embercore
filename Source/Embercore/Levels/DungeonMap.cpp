@@ -13,9 +13,16 @@
 
 ADungeonMap::ADungeonMap() {
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("Root")));
-	InstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("InstancedMeshComponent"));
-	InstancedMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
+	StaticMeshComponent->SetupAttachment(RootComponent);
 }
+
+// Called every frame
+void ADungeonMap::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+	DrawDebug();
+}
+
 
 void ADungeonMap::DrawDebug() {
 	if (ShowDebug) { DrawDebugNode(0); }
@@ -181,7 +188,7 @@ void ADungeonMap::SpawnNode(UClass* InClass, int32 Index) {
 }
 
 void ADungeonMap::SpawnMap(UClass* InClass) {
-	SpawnNode(InClass, 0);
+	if (Nodes.Num() > 0) { SpawnNode(InClass, 0); }
 }
 
 FVector ADungeonMap::GetRandomPointFrom(FDungeonContainer Room) {
