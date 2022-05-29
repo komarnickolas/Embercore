@@ -16,8 +16,10 @@ ADungeonRoom::ADungeonRoom() {
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("Room")));
 	Floor = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Floor"));
 	Floor->SetupAttachment(RootComponent);
+	Floor->SetIsReplicated(true);
 	Wall = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Wall"));
 	Wall->SetupAttachment(RootComponent);
+	Wall->SetIsReplicated(true);
 	bReplicates = true;
 }
 
@@ -33,14 +35,64 @@ void ADungeonRoom::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ADungeonRoom, Index);
 	DOREPLIFETIME(ADungeonRoom, Cleared);
 	DOREPLIFETIME(ADungeonRoom, Active);
-	DOREPLIFETIME(ADungeonRoom, NavMesh);
 	DOREPLIFETIME(ADungeonRoom, Floor);
 	DOREPLIFETIME(ADungeonRoom, Wall);
 }
 
-void ADungeonRoom::OnRep_Index() {
+void ADungeonRoom::OnRep_X() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_X: %i"), Index);
 	Fill();
 }
+
+void ADungeonRoom::OnRep_Y() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Y: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_XScale() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_XScale: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_YScale() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_YScale: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Width() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Width: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Height() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Height: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Index() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Index: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Cleared() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Cleared: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Active() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Active: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Floor() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Floor: %i"), Index);
+	Fill();
+};
+
+void ADungeonRoom::OnRep_Wall() {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_Wall: %i"), Index);
+	Fill();
+};
 
 void ADungeonRoom::SetupRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,
                              UMaterial* FloorMaterial, UStaticMesh* WallMesh,
@@ -78,6 +130,7 @@ void ADungeonRoom::BeginPlay() {
 }
 
 void ADungeonRoom::Fill() {
+	UE_LOG(LogTemp, Warning, TEXT("Fill Room: %i"), Index);
 	Width = X * XScale;
 	Height = Y * YScale;
 	for (int x = 0; x < X; x++) {

@@ -17,7 +17,6 @@ ADungeonMap::ADungeonMap() {
 	StaticMeshComponent->SetupAttachment(RootComponent);
 	StaticMeshComponent->SetHiddenInGame(true);
 }
-
 // Called every frame
 void ADungeonMap::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
@@ -172,7 +171,7 @@ ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 	if (Room.X == 0 || Room.Y == 0) { return nullptr; }
 	FTransform SpawnTransform(FRotator(0, 0, 0), SpawnVectorFor(Room, 0));
 	ADungeonRoom* DeferredRoom = Cast<ADungeonRoom>(
-		UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), InClass, SpawnTransform));
+		UGameplayStatics::BeginDeferredActorSpawnFromClass(this, InClass, SpawnTransform));
 	if (DeferredRoom != nullptr) {
 		DeferredRoom->SetupRoom(Room.Width, Room.Height,
 		                        FloorWidth, FloorHeight,

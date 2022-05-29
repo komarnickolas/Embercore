@@ -16,6 +16,7 @@ class EMBERCORE_API ADungeonMap : public AActor {
 	GENERATED_BODY()
 public:
 	ADungeonMap();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
