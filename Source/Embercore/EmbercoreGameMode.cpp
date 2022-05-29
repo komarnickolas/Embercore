@@ -19,6 +19,7 @@ AEmbercoreGameMode::AEmbercoreGameMode() {
 	HUDClass = AEmbercorePlayerHUD::StaticClass();
 	DefaultPawnClass = AEmbercorePlayer::StaticClass();
 	GameStateClass = AEmbercorePlayerState::StaticClass();
+	bStartPlayersAsSpectators = true;
 }
 
 FWeaponDataStructure AEmbercoreGameMode::FindWeapon_Implementation(FName WeaponId, bool& Success) {

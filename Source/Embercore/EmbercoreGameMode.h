@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "Levels/DungeonMap.h"
+#include "GameFramework/GameMode.h"
 #include "Weapons/WeaponData.h"
 #include "EmbercoreGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AEmbercoreGameMode : public AGameModeBase {
+class AEmbercoreGameMode : public AGameMode {
 	GENERATED_BODY()
 
 public:

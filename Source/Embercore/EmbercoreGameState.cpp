@@ -2,3 +2,7 @@
 
 
 #include "EmbercoreGameState.h"
+
+void AEmbercoreGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}

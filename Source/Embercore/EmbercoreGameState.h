@@ -22,12 +22,13 @@ public:
 	FStartRoom OnStartRoom;
 	UPROPERTY(BlueprintAssignable, Category=Events)
 	FCompleteRoom OnCompleteRoom;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	FRandomStream Stream;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	int32 CurrentRoom;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	ADungeonRoom* CurrentRoomActor;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	ADungeonMap* CurrentMap;

@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -17,6 +18,28 @@ ADungeonRoom::ADungeonRoom() {
 	Floor->SetupAttachment(RootComponent);
 	Wall = CreateDefaultSubobject<UInstancedStaticMeshComponent>(FName("Wall"));
 	Wall->SetupAttachment(RootComponent);
+	bReplicates = true;
+}
+
+void ADungeonRoom::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADungeonRoom, X);
+	DOREPLIFETIME(ADungeonRoom, Y);
+	DOREPLIFETIME(ADungeonRoom, XScale);
+	DOREPLIFETIME(ADungeonRoom, YScale);
+	DOREPLIFETIME(ADungeonRoom, Width);
+	DOREPLIFETIME(ADungeonRoom, Height);
+	DOREPLIFETIME(ADungeonRoom, Index);
+	DOREPLIFETIME(ADungeonRoom, Cleared);
+	DOREPLIFETIME(ADungeonRoom, Active);
+	DOREPLIFETIME(ADungeonRoom, NavMesh);
+	DOREPLIFETIME(ADungeonRoom, Floor);
+	DOREPLIFETIME(ADungeonRoom, Wall);
+}
+
+void ADungeonRoom::OnRep_Index() {
+	Fill();
 }
 
 void ADungeonRoom::SetupRoom(int32 InX, int32 InY, float InXScale, float InYScale, UStaticMesh* FloorMesh,

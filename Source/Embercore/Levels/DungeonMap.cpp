@@ -15,6 +15,7 @@ ADungeonMap::ADungeonMap() {
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(FName("Root")));
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetHiddenInGame(true);
 }
 
 // Called every frame
@@ -171,7 +172,7 @@ ADungeonRoom* ADungeonMap::SpawnRoom(UClass* InClass, FDungeonContainer Room) {
 	if (Room.X == 0 || Room.Y == 0) { return nullptr; }
 	FTransform SpawnTransform(FRotator(0, 0, 0), SpawnVectorFor(Room, 0));
 	ADungeonRoom* DeferredRoom = Cast<ADungeonRoom>(
-		UGameplayStatics::BeginDeferredActorSpawnFromClass(this, InClass, SpawnTransform));
+		UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), InClass, SpawnTransform));
 	if (DeferredRoom != nullptr) {
 		DeferredRoom->SetupRoom(Room.Width, Room.Height,
 		                        FloorWidth, FloorHeight,
