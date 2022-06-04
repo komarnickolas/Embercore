@@ -17,12 +17,6 @@ struct DUNGEON_API FDungeonContainer {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Height;
 
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-	bool Cleared = false;
-
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-	bool Active = false;
-
 	float GetXCenter() const {
 		return (X + GetXMax()) / 2;
 	}

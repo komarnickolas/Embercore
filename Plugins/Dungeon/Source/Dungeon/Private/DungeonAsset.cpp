@@ -11,14 +11,20 @@ void UDungeonAsset::SetStream(FRandomStream InStream) {
 	this->CurrentStream = InStream;
 }
 
+void UDungeonAsset::Reset() {
+	Nodes.Empty();
+}
+
 void UDungeonAsset::GenerateMap() {
-	SplitDungeon(Depth, FDungeonContainer(0, 0, Size, Size), -1)
+	Reset();
+	SplitDungeon(Depth, FDungeonContainer(0, 0, Size, Size), -1);
 	GenerateRooms(0);
 }
 
-void UDungeonAsset::GenerateMap(FRandomStream InStream = FRandomStream()) {
+void UDungeonAsset::GenerateMapWithStream(FRandomStream InStream = FRandomStream()) {
 	SetStream(InStream);
-	SplitDungeon(Depth, FDungeonContainer(0, 0, Size, Size), -1)
+	Reset();
+	SplitDungeon(Depth, FDungeonContainer(0, 0, Size, Size), -1);
 	GenerateRooms(0);
 }
 
@@ -98,4 +104,41 @@ void UDungeonAsset::GenerateRooms(int32 Index) {
 	}
 	if (Node.Left != -1) { GenerateRooms(Node.Left); }
 	if (Node.Right != -1) { GenerateRooms(Node.Right); }
+}
+
+FDungeonContainer UDungeonAsset::GetRoomFor(int32 Index) {
+	if (Nodes[Index].IsLeaf()) {
+		return Nodes[Index].Room;
+	}
+	FDungeonContainer LeftRoom, RightRoom;
+	if (Nodes[Index].Left != -1) {
+		LeftRoom = GetRoomFor(Nodes[Index].Left);
+	}
+	if (Nodes[Index].Right != -1) {
+		RightRoom = GetRoomFor(Nodes[Index].Right);
+	}
+	if (LeftRoom.X != 0) { return LeftRoom; }
+	if (RightRoom.X != 0) { return RightRoom; }
+	return FDungeonContainer(-1, -1, 0, 0);
+}
+
+void UDungeonAsset::IterateNodes(int32 Index = 0) {
+	IterateNodesDelegate.ExecuteIfBound(Nodes[Index], Nodes[Index].IsLeaf());
+	if (Nodes[Index].Left != -1) { IterateNodes(Nodes[Index].Left); }
+	if (Nodes[Index].Right != -1) { IterateNodes(Nodes[Index].Right); }
+}
+
+FVector UDungeonAsset::GetCenter() const {
+	const int32 MapX = Size * FloorWidth;
+	const int32 MapY = Size * FloorHeight;
+	return FVector(MapX / 2, MapY / 2, 0);
+}
+
+FVector UDungeonAsset::GetScale() const {
+	return FVector(Size, Size, 1);
+}
+
+FVector UDungeonAsset::GetRandomPointFrom(FDungeonContainer Room) {
+	return FVector(CurrentStream.RandRange(Room.X + 1, Room.GetXMax() - 1),
+	               CurrentStream.RandRange(Room.Y + 1, Room.GetYMax() - 1), 0);
 }

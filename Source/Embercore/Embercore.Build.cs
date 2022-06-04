@@ -11,6 +11,7 @@ public class Embercore : ModuleRules {
 			"Niagara", "Slate", "SlateCore"
 		});
 		PrivateDependencyModuleNames.AddRange(new string[]
-			{"GameplayTasks", "GameplayTags", "GameplayAbilities", "GeometryFramework"});
+			{"GameplayTasks", "GameplayTags", "GameplayAbilities", "GeometryFramework", "Dungeon"
+			});
 	}
 }

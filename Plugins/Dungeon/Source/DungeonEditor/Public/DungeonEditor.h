@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DungeonAsset.h"
 #include "Modules/ModuleManager.h"
 
 class FDungeonEditorModule : public IModuleInterface {

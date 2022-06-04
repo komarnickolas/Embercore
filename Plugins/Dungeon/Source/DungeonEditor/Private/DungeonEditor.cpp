@@ -5,7 +5,7 @@
 #include "AssetToolsModule.h"
 #include "DungeonAssetTypeActions.h"
 
-#define LOCTEXT_NAMESPACE "FExtraAssetsEditorModule"
+#define LOCTEXT_NAMESPACE "DungeonEditor"
 
 void FDungeonEditorModule::StartupModule() {
 
@@ -23,7 +23,6 @@ void FDungeonEditorModule::StartupModule() {
 void FDungeonEditorModule::ShutdownModule() {
 
 }
-
 #undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FDungeonEditorModule, ExtraAssetsEditor)
