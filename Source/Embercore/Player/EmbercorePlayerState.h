@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EMBERCORE_API AEmbercorePlayerState : public APlayerState, public IAbilitySystemInterface {
 	GENERATED_BODY()
 public:

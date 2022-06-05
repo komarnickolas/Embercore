@@ -8,7 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EmbercorePlayerController.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class EMBERCORE_API AEmbercorePlayerController : public APlayerController {
 	GENERATED_BODY()
 

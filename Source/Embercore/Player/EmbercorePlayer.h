@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "EmbercorePlayerHUD.h"
 #include "Embercore/EmbercoreCharacter.h"
-#include "Embercore/Inventory/InventoryComponent.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
 #include "EmbercorePlayer.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EMBERCORE_API AEmbercorePlayer : public AEmbercoreCharacter {
 	GENERATED_BODY()
 

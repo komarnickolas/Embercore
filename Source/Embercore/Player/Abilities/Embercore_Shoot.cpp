@@ -32,7 +32,7 @@ void UEmbercore_Shoot::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 	AEmbercoreCharacter* Character = Cast<AEmbercoreCharacter>(GetAvatarActorFromActorInfo());
 	const TSubclassOf<AEmbercoreWeapon> EquippedWeapon = Character->InventoryComponent->GetCurrentlyEquippedWeapon();
-	if (!Character || !EquippedWeapon) {
+	if (!IsValid(Character) || !IsValid(EquippedWeapon)) {
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
 

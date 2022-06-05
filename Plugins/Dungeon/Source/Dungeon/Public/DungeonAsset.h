@@ -50,7 +50,7 @@ public:
 	UFUNCTION()
 	FDungeonContainer GetRoomFor(int32 Index);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void IterateNodes(int32 Index);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
