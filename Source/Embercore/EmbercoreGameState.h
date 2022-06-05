@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "Levels/DungeonMap.h"
 #include "EmbercoreGameState.generated.h"
 
@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCompleteRoom, ADungeonRoom*, Room);
  * 
  */
 UCLASS(BlueprintType)
-class EMBERCORE_API AEmbercoreGameState : public AGameStateBase {
+class EMBERCORE_API AEmbercoreGameState : public AGameState {
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintAssignable, Category=Events)

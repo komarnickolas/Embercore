@@ -32,7 +32,7 @@ void AEmbercorePlayerController::Tick(float DeltaTime) {
 	if (GetCharacter()) {
 		FVector MouseLocation, MouseDirection;
 		this->DeprojectMousePositionToWorld(MouseLocation, MouseDirection);
-		const FVector MousePosition = (MouseDirection * 1000) + MouseLocation;
+		const FVector MousePosition = (MouseDirection * 1500) + MouseLocation;
 		const FVector CharacterLocation = GetCharacter()->GetActorLocation();
 		const FRotator CharacterRotation = GetCharacter()->GetActorRotation();
 		const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(CharacterLocation, MousePosition);
