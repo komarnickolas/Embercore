@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "DungeonContainer.h"
+#include "DungeonTheme.h"
 #include "SubDungeon.h"
 #include "UObject/NoExportTypes.h"
-#include "DungeonAsset.generated.h"
+#include "DungeonBSP.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateNodesDelegate, FSubDungeon, SubDungeon, bool, IsLeaf);
 
@@ -14,11 +15,11 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FIterateNodesDelegate, FSubDungeon, SubDungeo
  * 
  */
 UCLASS(BlueprintType)
-class DUNGEON_API UDungeonAsset : public UObject {
+class DUNGEON_API UDungeonBSP : public UObject {
 	GENERATED_BODY()
 
-public:
-	UDungeonAsset();
+public:c
+	UDungeonBSP();
 
 	UFUNCTION(BlueprintCallable)
 	void SetStream(FRandomStream InStream);
@@ -51,20 +52,30 @@ public:
 	FDungeonContainer GetRoomFor(int32 Index);
 
 	UFUNCTION(BlueprintCallable)
-	void IterateNodes(int32 Index);
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FIterateNodesDelegate IterateNodesDelegate;
+	void IterateNodes(FIterateNodesDelegate IterateNodesDelegate, int32 Index);
 
 	UFUNCTION()
 	FVector GetCenter() const;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	FVector GetScale() const;
 
-	UFUNCTION()
-	FVector GetRandomPointFrom(FDungeonContainer Room);
+	UFUNCTION(BlueprintCallable)
+	void SetContext(UObject* InContext);
 
+	UFUNCTION(BlueprintCallable)
+	void DrawDebug();
+
+	UFUNCTION()
+	void DrawDebugNode(FSubDungeon Node, bool IsLeaf);
+
+	UFUNCTION()
+	void DrawDebugContainer(FDungeonContainer Container, FColor Color, float Z);
+	float ScaleX(float InX);
+	float ScaleY(float InY);
+
+	UFUNCTION(BlueprintCallable)
+	FVector Scale(FVector2D Vector, float InZ = 0);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Map)
 	int32 Size;
@@ -77,22 +88,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Room)
 	int32 MinRoomHeight;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
-	UStaticMesh* FloorMesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
-	UMaterial* FloorMaterial;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
-	float FloorWidth;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Floor")
-	float FloorHeight;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Theme")
+	UDungeonTheme* Theme;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Wall")
-	UStaticMesh* WallMesh;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Room|Wall")
-	UMaterial* WallMaterial;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool ShowDebug;
 
 	UPROPERTY(VisibleAnywhere, Category=Map)
 	TArray<FSubDungeon> Nodes;
 	UPROPERTY()
 	FRandomStream CurrentStream;
+
+	UObject* Context;
 };

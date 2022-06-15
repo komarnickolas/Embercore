@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
-#include "Levels/DungeonMap.h"
 #include "EmbercoreGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStartRoom, ADungeonRoom*, Room);
@@ -28,8 +27,4 @@ public:
 	FRandomStream Stream;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
 	int32 CurrentRoom;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Replicated)
-	ADungeonRoom* CurrentRoomActor;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	ADungeonMap* CurrentMap;
 };
