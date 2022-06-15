@@ -3,21 +3,25 @@
 #include "DungeonEditor.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
-#include "DungeonAssetTypeActions.h"
+#include "DungeonBSPTypeActions.h"
+#include "DungeonThemeTypeActions.h"
 
 #define LOCTEXT_NAMESPACE "DungeonEditor"
 
 void FDungeonEditorModule::StartupModule() {
 
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+	RegisterAsset(new FDungeonBSPTypeActions(
+		AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Dungeon")),
+		                                         FText::FromName(TEXT("Dungeon")))));
+	RegisterAsset(new FDungeonThemeTypeActions(AssetTools.RegisterAdvancedAssetCategory(
+		FName(TEXT("Dungeon")), FText::FromName(TEXT("DungeonTheme")))));
+}
 
-	EAssetTypeCategories::Type gameAssetCategory = AssetTools.RegisterAdvancedAssetCategory(
-		FName(TEXT("Dungeon")), FText::FromName(TEXT("Dungeon")));
-
-	TSharedPtr<IAssetTypeActions> actionType = MakeShareable(new FDungeonAssetTypeActions(gameAssetCategory));
-
+void FDungeonEditorModule::RegisterAsset(FAssetTypeActions_Base* AssetTypeActions) {
+	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+	TSharedPtr<IAssetTypeActions> actionType = MakeShareable(AssetTypeActions);
 	AssetTools.RegisterAssetTypeActions(actionType.ToSharedRef());
-
 }
 
 void FDungeonEditorModule::ShutdownModule() {
