@@ -18,7 +18,7 @@ UCLASS(BlueprintType)
 class DUNGEON_API UDungeonBSP : public UObject {
 	GENERATED_BODY()
 
-public:c
+public:
 	UDungeonBSP();
 
 	UFUNCTION(BlueprintCallable)
