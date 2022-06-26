@@ -7,7 +7,6 @@
 #include "GameplayTagContainer.h"
 #include "AbilitySystemInterface.h"
 #include "Embercore.h"
-#include "Inventory/InventoryComponent.h"
 #include "Weapons/EmbercoreWeapon.h"
 #include "EmbercoreCharacter.generated.h"
 
@@ -21,11 +20,6 @@ class AEmbercoreCharacter : public ACharacter, public IAbilitySystemInterface {
 
 public:
 	AEmbercoreCharacter(const class FObjectInitializer& ObjectInitializer);
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	class UInventoryComponent* InventoryComponent;
-
-	class UInventoryComponent* GetInventory();
 
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
@@ -72,7 +66,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
 	float GetMaxHealth() const;
-	
+
 	// Gets the Current value of MoveSpeed
 	UFUNCTION(BlueprintCallable, Category = "EmbercoreCharacter|Attributes")
 	float GetMoveSpeed() const;

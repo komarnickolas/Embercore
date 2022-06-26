@@ -32,11 +32,6 @@ AEmbercoreCharacter::AEmbercoreCharacter(const class FObjectInitializer& ObjectI
 	HitDirectionLeftTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Left"));
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("Effect.RemoveOnDeath"));
-
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName("InventoryComponent"));
-	InventoryComponent->InventoryName = "Backpack";
-	InventoryComponent->Capacity = 3;
-	InventoryComponent->WeaponCapacity = 3;
 }
 
 void AEmbercoreCharacter::Tick(float DeltaSeconds) {
@@ -45,10 +40,6 @@ void AEmbercoreCharacter::Tick(float DeltaSeconds) {
 
 UAbilitySystemComponent* AEmbercoreCharacter::GetAbilitySystemComponent() const {
 	return AbilitySystemComponent.Get();
-}
-
-UInventoryComponent* AEmbercoreCharacter::GetInventory() {
-	return InventoryComponent;
 }
 
 bool AEmbercoreCharacter::IsAlive() const {

@@ -3,7 +3,7 @@
 #include "ItemStructure.generated.h"
 
 USTRUCT(BlueprintType)
-struct EMBERCORE_API FItemStructure {
+struct INVENTORYSYSTEM_API FItemStructure {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
@@ -13,15 +13,15 @@ struct EMBERCORE_API FItemStructure {
 	FString Description;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSubclassOf<AActor> Actor;
+	TSubclassOf<UObject> Object;
 
 	bool operator==(const FItemStructure& OtherStruct) const {
-		return Actor == OtherStruct.Actor;
+		return Object == OtherStruct.Object;
 	}
 
 	FItemStructure() {
 		Name = "";
 		Description = "";
-		Actor = nullptr;
+		Object = nullptr;
 	}
 };

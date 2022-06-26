@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStopTimer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateTimer, bool, IsHeld);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class EMBERCORE_API UInteractableComponent : public UWidgetComponent {
+class INTERACTABLE_API UInteractableComponent : public UWidgetComponent {
 	GENERATED_BODY()
 
 public:

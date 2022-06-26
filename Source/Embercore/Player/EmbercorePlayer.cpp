@@ -12,7 +12,6 @@
 #include "Embercore/EmbercoreGameMode.h"
 #include "Embercore/EmbercoreAttributeSet.h"
 #include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
-#include "Embercore/Inventory/InventoryComponent.h"
 #include "Embercore/UI/EmbercoreFloatingStatusBarWidget.h"
 #include "Embercore/Weapons/EmbercoreWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -59,27 +58,12 @@ AEmbercorePlayer::AEmbercorePlayer(const class FObjectInitializer& ObjectInitial
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 }
 
-void AEmbercorePlayer::PreviousWeapon() {
-	InventoryComponent->SwitchWeapon(-1);
-}
-
-void AEmbercorePlayer::NextWeapon() {
-	InventoryComponent->SwitchWeapon(1);
-}
-
-void AEmbercorePlayer::SelectWeapon(int32 Index) {
-	InventoryComponent->SelectWeapon(Index);
-}
-
 // Called to bind functionality to input
 void AEmbercorePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AEmbercorePlayer::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AEmbercorePlayer::MoveRight);
-
-	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &AEmbercorePlayer::NextWeapon);
-	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AEmbercorePlayer::PreviousWeapon);
 
 	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 	BindASCInput();
@@ -173,7 +157,6 @@ void AEmbercorePlayer::BeginPlay() {
 
 	StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
-	InventoryComponent->AddWeapon(StartingWeapon);
 }
 
 void AEmbercorePlayer::PostInitializeComponents() {

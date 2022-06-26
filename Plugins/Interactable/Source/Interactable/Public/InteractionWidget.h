@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class EMBERCORE_API UInteractionWidget : public UUserWidget {
+class INTERACTABLE_API UInteractionWidget : public UUserWidget {
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)

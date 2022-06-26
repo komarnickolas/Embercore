@@ -18,9 +18,6 @@ class EMBERCORE_API AEmbercorePlayer : public AEmbercoreCharacter {
 public:
 	AEmbercorePlayer(const class FObjectInitializer& ObjectInitializer);
 
-	void PreviousWeapon();
-	void NextWeapon();
-	void SelectWeapon(int32 Index);
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
