@@ -7,13 +7,7 @@
 		{
 			"Name": "Embercore",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"GameplayAbilities",
-				"UMG",
-				"UnrealEd"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -35,18 +29,6 @@
 		},
 		{
 			"Name": "GameplayAbilities",
-			"Enabled": true
-		},
-		{
-			"Name": "CodeView",
-			"Enabled": true
-		},
-		{
-			"Name": "GameFeatures",
-			"Enabled": true
-		},
-		{
-			"Name": "PerformanceMonitor",
 			"Enabled": true
 		}
 	]

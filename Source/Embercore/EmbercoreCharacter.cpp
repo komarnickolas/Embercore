@@ -1,265 +1,99 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EmbercoreCharacter.h"
-
-#include "EmbercoreCharacterMovementComponent.h"
-#include "EmbercoreAttributeSet.h"
-#include "Abilities/EmbercoreGameplayAbility.h"
-#include "Embercore/Abilities/EmbercoreAbilitySystemComponent.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
-#include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerController.h"
+#include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Materials/Material.h"
-#include "Engine/World.h"
 
-AEmbercoreCharacter::AEmbercoreCharacter(const class FObjectInitializer& ObjectInitializer) {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+//////////////////////////////////////////////////////////////////////////
+// AEmbercoreCharacter
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility,
-	                                                     ECR_Overlap);
+AEmbercoreCharacter::AEmbercoreCharacter() {
+	// Set size for collision capsule
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	bAlwaysRelevant = true;
+	// set our turn rate for input
+	TurnRateGamepad = 50.f;
 
-	// Cache tags
-	HitDirectionFrontTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Front"));
-	HitDirectionBackTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Back"));
-	HitDirectionRightTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Right"));
-	HitDirectionLeftTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Left"));
-	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
-	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("Effect.RemoveOnDeath"));
+	// Don't rotate when the controller rotates. Let that just affect the camera.
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
+	// instead of recompiling to adjust them
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
+	CameraBoom->TargetArmLength = 400.f;
+	CameraBoom->SetRelativeRotation(FRotator(-80.f, 0.f, 0.f));
+	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
+
+	// Create a follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void AEmbercoreCharacter::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
+//////////////////////////////////////////////////////////////////////////
+// Input
+
+void AEmbercoreCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
+	// Set up gameplay key bindings
+	check(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AEmbercoreCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("Move Right / Left", this, &AEmbercoreCharacter::MoveRight);
 }
 
-UAbilitySystemComponent* AEmbercoreCharacter::GetAbilitySystemComponent() const {
-	return AbilitySystemComponent.Get();
+void AEmbercoreCharacter::TurnAtRate(float Rate) {
+	// calculate delta for this frame from the rate information
+	AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
-bool AEmbercoreCharacter::IsAlive() const {
-	return GetHealth() > 0.0f;
+void AEmbercoreCharacter::LookUpAtRate(float Rate) {
+	// calculate delta for this frame from the rate information
+	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
-int32 AEmbercoreCharacter::GetAbilityLevel(EEmbercoreAbilityInputID AbilityID) const {
-	return 1;
-}
+void AEmbercoreCharacter::MoveForward(float Value) {
+	if ((Controller != nullptr) && (Value != 0.0f)) {
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-void AEmbercoreCharacter::RemoveCharacterAbilities() {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->
-		CharacterAbilitiesGiven) {
-		return;
-	}
-
-	// Remove any abilities added from a previous call. This checks to make sure the ability is in the startup 'CharacterAbilities' array.
-	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
-	for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities()) {
-		if ((Spec.SourceObject == this) && CharacterAbilities.Contains(Spec.Ability->GetClass())) {
-			AbilitiesToRemove.Add(Spec.Handle);
-		}
-	}
-
-	// Do in two passes so the removal happens after we have the full list
-	for (int32 i = 0; i < AbilitiesToRemove.Num(); i++) {
-		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
-	}
-
-	AbilitySystemComponent->CharacterAbilitiesGiven = false;
-}
-
-EEmbercoreHitReactDirection AEmbercoreCharacter::GetHitReactDirection(const FVector& ImpactPoint) {
-	const FVector& ActorLocation = GetActorLocation();
-	// PointPlaneDist is super cheap - 1 vector subtraction, 1 dot product.
-	float DistanceToFrontBackPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorRightVector());
-	float DistanceToRightLeftPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorForwardVector());
-
-
-	if (FMath::Abs(DistanceToFrontBackPlane) <= FMath::Abs(DistanceToRightLeftPlane)) {
-		// Determine if Front or Back
-
-		// Can see if it's left or right of Left/Right plane which would determine Front or Back
-		if (DistanceToRightLeftPlane >= 0) {
-			return EEmbercoreHitReactDirection::Front;
-		}
-		return EEmbercoreHitReactDirection::Back;
-	}
-	// Determine if Right or Left
-
-	if (DistanceToFrontBackPlane >= 0) {
-		return EEmbercoreHitReactDirection::Right;
-	}
-	return EEmbercoreHitReactDirection::Left;
-
-	return EEmbercoreHitReactDirection::Front;
-}
-
-void AEmbercoreCharacter::PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser) {
-	if (IsAlive()) {
-		if (HitDirection == HitDirectionLeftTag) {
-			ShowHitReact.Broadcast(EEmbercoreHitReactDirection::Left);
-		}
-		else if (HitDirection == HitDirectionFrontTag) {
-			ShowHitReact.Broadcast(EEmbercoreHitReactDirection::Front);
-		}
-		else if (HitDirection == HitDirectionRightTag) {
-			ShowHitReact.Broadcast(EEmbercoreHitReactDirection::Right);
-		}
-		else if (HitDirection == HitDirectionBackTag) {
-			ShowHitReact.Broadcast(EEmbercoreHitReactDirection::Back);
-		}
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
 	}
 }
 
-bool AEmbercoreCharacter::PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser) {
-	return true;
-}
+void AEmbercoreCharacter::MoveRight(float Value) {
+	if ((Controller != nullptr) && (Value != 0.0f)) {
+		// find out which way is right
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-int32 AEmbercoreCharacter::GetCharacterLevel() const {
-	if (AttributeSetBase.IsValid()) {
-		return static_cast<int32>(AttributeSetBase->GetCharacterLevel());
-	}
-
-	return 0;
-}
-
-float AEmbercoreCharacter::GetHealth() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetHealth();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetMaxHealth() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMaxHealth();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetMoveSpeed() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMoveSpeed();
-	}
-
-	return 0.0f;
-}
-
-float AEmbercoreCharacter::GetMoveSpeedBaseValue() const {
-	if (AttributeSetBase.IsValid()) {
-		return AttributeSetBase->GetMoveSpeedAttribute().GetGameplayAttributeData(AttributeSetBase.Get())->
-		                         GetBaseValue();
-	}
-
-	return 0.0f;
-}
-
-// Run on Server and all clients
-void AEmbercoreCharacter::Die() {
-	// Only runs on Server
-	RemoveCharacterAbilities();
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->GravityScale = 0;
-	GetCharacterMovement()->Velocity = FVector(0);
-
-	OnCharacterDied.Broadcast(this);
-
-	if (AbilitySystemComponent.IsValid()) {
-		AbilitySystemComponent->CancelAllAbilities();
-
-		FGameplayTagContainer EffectTagsToRemove;
-		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
-		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
-
-		AbilitySystemComponent->AddLooseGameplayTag(DeadTag);
-	}
-
-	if (DeathMontage) {
-		PlayAnimMontage(DeathMontage);
-	}
-	else {
-		FinishDying();
-	}
-}
-
-void AEmbercoreCharacter::FinishDying() {
-	Destroy();
-}
-
-// Called when the game starts or when spawned
-void AEmbercoreCharacter::BeginPlay() {
-	Super::BeginPlay();
-}
-
-void AEmbercoreCharacter::AddCharacterAbilities() {
-	// Grant abilities, but only on the server	
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->
-		CharacterAbilitiesGiven) {
-		return;
-	}
-
-	for (TSubclassOf<UEmbercoreGameplayAbility>& StartupAbility : CharacterAbilities) {
-		AbilitySystemComponent->GiveAbility(
-			FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID),
-			                     static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
-	}
-
-	AbilitySystemComponent->CharacterAbilitiesGiven = true;
-}
-
-void AEmbercoreCharacter::InitializeAttributes() {
-	if (!AbilitySystemComponent.IsValid()) {
-		return;
-	}
-
-	if (!DefaultAttributes) {
-		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."),
-		       *FString(__FUNCTION__), *GetName());
-		return;
-	}
-
-	// Can run on Server and Client
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(
-		DefaultAttributes, GetCharacterLevel(), EffectContext);
-	if (NewHandle.IsValid()) {
-		FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
-			*NewHandle.Data.Get(), AbilitySystemComponent.Get());
-	}
-}
-
-void AEmbercoreCharacter::AddStartupEffects() {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->
-		StartupEffectsApplied) {
-		return;
-	}
-
-	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	for (TSubclassOf<UGameplayEffect> GameplayEffect : StartupEffects) {
-		FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(
-			GameplayEffect, GetCharacterLevel(), EffectContext);
-		if (NewHandle.IsValid()) {
-			FActiveGameplayEffectHandle ActiveGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
-				*NewHandle.Data.Get(), AbilitySystemComponent.Get());
-		}
-	}
-
-	AbilitySystemComponent->StartupEffectsApplied = true;
-}
-
-void AEmbercoreCharacter::SetHealth(float Health) {
-	if (AttributeSetBase.IsValid()) {
-		AttributeSetBase->SetHealth(Health);
+		// get right vector 
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		// add movement in that direction
+		AddMovementInput(Direction, Value);
 	}
 }
